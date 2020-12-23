@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { Store } from './../assets/Store'
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
+import groupBy from 'lodash/groupBy'
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -96,6 +97,19 @@ const Shop = () => {
         setCart(newCart)
         setOpen(true)
         console.log('New Store: ', products)
+        const groupC = groupBy(cart, 'id')
+        let finalCart = []
+                for (const property in groupC) {
+                    let inQuantity = 0
+                     for (const element of groupC[`${property}`]) {
+                         inQuantity = inQuantity + Number(element.quantity)                    
+                    }
+                     finalCart.push({
+                        id:  property,
+                        quantity: inQuantity
+                     })
+                }
+                setCart(finalCart)
     }
 
     const nonAuthPurchase = () => {
@@ -155,7 +169,20 @@ const Shop = () => {
                 })
                 setCart(newCart)
                 setOpen(true);
-                console.log(products)
+                const groupC = groupBy(cart, 'id')
+                let finalCart = []
+                for (const property in groupC) {
+                    let inQuantity = 0
+                     for (const element of groupC[`${property}`]) {
+                         inQuantity = inQuantity + Number(element.quantity)                    
+                    }
+                     finalCart.push({
+                        id:  property,
+                        quantity: inQuantity
+                     })
+                }
+                setCart(finalCart)
+                console.log('finalCart: ', finalCart)
             } else {
                 setModalContent({
                     title: 'Compra invalida',
