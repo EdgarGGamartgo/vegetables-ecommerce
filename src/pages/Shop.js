@@ -5,21 +5,133 @@ import './../css/custom.css';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import { Store } from './../assets/Store'
+import { makeStyles } from '@material-ui/core/styles';
+import { Modal } from '@material-ui/core';
+
+function rand() {
+    return Math.round(Math.random() * 20) - 10;
+  }
+  
+  function getModalStyle() {
+    const top = 50 + rand();
+    const left = 50 + rand();
+  
+    return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+    };
+  }
+  
+  const useStyles = makeStyles((theme) => ({
+    paper: {
+      position: 'absolute',
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[1],
+      padding: theme.spacing(2, 4, 3),
+    },
+  }));
 
 const Shop = () => {
 
     const [products, setProducts] = useState(Store)
     const [buyingQuantity, setBuyingQuantity] = useState(0)
+    const [currentProduct, setCurrentProduct] = useState({
+        quantity: 0,
+        name: ''
+    })
+    const [modalContent, setModalContent] = useState({
+        title: 'Compra invalida',
+        content: `Su compra es invalida. Solamente tenemos ${currentProduct.quantity} Kg de ${currentProduct.name}. Desea comprar los kilos disponibles?`,
+    })
+    const [cart, setCart] = useState([])
+
+    const classes = useStyles();
+    // getModalStyle is not a pure function, we roll the style only on the first render
+    const [modalStyle] = useState(getModalStyle);
+    const [open, setOpen] = useState(false);
+
+    const goToCart = () => {
+        setOpen(false)
+        console.log('Cart is : ', cart)
+    }
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const authPurchase = () => {
+        // currentProduct
+            let quantitySet = currentProduct.quantity
+            let nameSet = currentProduct.name
+            setModalContent({
+                title: 'Compra invalida',
+                content: `Su compra es invalida. Solamente tenemos ${currentProduct.quantity} Kg de ${currentProduct.name}. Desea comprar los kilos disponibles?`,
+                ok: true
+            })
+            let updatedStore = products
+            for (var i=0; i < products.length; i++) {
+                if (products[i].id === currentProduct.id) {
+                    updatedStore[i].quantity = 0
+                }
+            }
+        setProducts(updatedStore)
+        setOpen(false)
+        setModalContent({
+            title: 'Exito',
+            content: `Se ha agregado a carrito ${quantitySet} Kg de ${nameSet}.`,
+            ok: false
+        })
+        let newCart = cart
+        newCart.push({
+            quantitySet: quantitySet,
+            id: currentProduct.id
+        })
+        setCart(newCart)
+        setOpen(true)
+        console.log('New Store: ', products)
+    }
+
+    const nonAuthPurchase = () => {
+        setOpen(false)
+        console.log('New Store: ', products)
+    }
+
+    const body = (
+        <div style={modalStyle} className={classes.paper}>
+            <h2 id="simple-modal-title">{modalContent.title}</h2>
+            <p id="simple-modal-description">
+                {modalContent.content}
+            </p>
+            {
+                modalContent.ok === true ?
+                    <>
+                    <button onClick={() => authPurchase()}>Si</button>
+                    <button onClick={() => nonAuthPurchase()}>No</button>   
+                    </>
+                    :
+                    <button onClick={() => goToCart()}>OK</button>
+            }
+            
+        </div>
+    );
 
     useEffect(() => {
-        console.log('Initial state: ', products)
+        console.log('State: ', products)
     }, [])
 
     const deleteProduct = (quantityProduct, id) => {
             console.log('How much will you buy? ', quantityProduct)
             let result = products.filter(product => product.id === id)
+            setCurrentProduct(result[0])
             console.log('Which product did you choose? ', result)
-            if (quantityProduct < result[0].quantity) {
+            if (quantityProduct <= result[0].quantity) {
                 const newStore = result[0].quantity - quantityProduct
                 console.log('Which is the new quantity? ', newStore)
                 let updatedStore = products
@@ -30,9 +142,28 @@ const Shop = () => {
                     }
                 }
                 setProducts(updatedStore)
+                console.log('Current Product is: ', currentProduct)
+                setModalContent({
+                    title: 'Exito',
+                    content: `Se ha agregado a carrito ${quantityProduct} Kg de ${result[0].name}.`,
+                    ok: false
+                })
+                let newCart = cart
+                newCart.push({
+                    quantity: quantityProduct,
+                    id 
+                })
+                setCart(newCart)
+                setOpen(true);
                 console.log(products)
             } else {
+                setModalContent({
+                    title: 'Compra invalida',
+                    content: `Su compra es invalida. Solamente tenemos ${result[0].quantity} Kg de ${result[0].name}. Desea comprar los kilos disponibles?`,
+                    ok: true
+                })
                 console.log(`There's only ${result[0].quantity} Kg in store. Whould you like to buy only the remaining ${result[0].quantity} Kg?`)
+                setOpen(true);
             }
             
     }
@@ -525,9 +656,15 @@ const Shop = () => {
             <a href="https://github.com/EdgarGGamartgo/">Edgar Martinez</a></p>
     </div>
     {/* <!-- End copyright  --> */}
-
-
-        </div>
+        <Modal
+            open={open}
+            onClose={() => handleClose()}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+        >
+                {body}
+        </Modal>
+    </div>
     )
 }
 

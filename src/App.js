@@ -1,5 +1,6 @@
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import { Contact } from './pages/Contact';
 import './css/bootstrap.min.css';
 import './css/style.css';
 import './css/responsive.css';
@@ -33,4 +34,13 @@ const ShopPage = () => {
 		</div>
 	)
 };
-export {Homepage, ShopPage } ;
+
+const ContactPage = () => {
+	return (
+		<div>
+				<Contact/>
+		</div>
+	)
+};
+
+export {Homepage, ShopPage, ContactPage } ;
