@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import {Homepage, ShopPage, ContactPage} from './App';
+import { Homepage, ShopPage, ContactPage, CartPage } from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -9,7 +8,8 @@ ReactDOM.render(
   <Router>
        <Switch>
 		      <Route exact path="/" component={Homepage}/>
-				  <Route exact path="/shop" component={ShopPage}/>
+				  <Route exact path="/cart" component={CartPage}/>
+          <Route exact path="/shop" component={ShopPage}/>
 				  <Route exact path="/contact" component={ContactPage}/>
 	    </Switch>
     </Router>

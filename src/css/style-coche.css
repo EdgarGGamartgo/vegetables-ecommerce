@@ -1,0 +1,133 @@
+/*------------------------------------------------------------------
+    IMPORT FONTS
+-------------------------------------------------------------------*/
+
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800');
+@import url('https://fonts.googleapis.com/css?family=Dosis:200,300,400,500,600,700');
+
+
+/*
+
+    font-family: 'Poppins', sans-serif;
+
+    font-family: 'Dosis', sans-serif;
+
+*/
+
+/*------------------------------------------------------------------
+    IMPORT FILES
+-------------------------------------------------------------------*/
+
+@import url(all.css);
+@import url(superslides.css);
+@import url(bootstrap-select.css);
+@import url(carousel-ticker.css);
+@import url(code_animate.css);
+@import url(bootsnav.css);
+@import url(owl.carousel.min.css);
+@import url(jquery-ui.css);
+@import url(baguetteBox.min.css);
+
+/*------------------------------------------------------------------
+    SKELETON
+-------------------------------------------------------------------*/
+
+
+*{
+    box-sizing:border-box;
+    font-family:"Roboto", sans-serif ;
+    margin: 0;
+}
+
+.right{
+    float: right;
+}
+
+.left{
+    float: left;
+}
+
+#der{
+    text-align: right;
+}
+
+#izq{
+    text-align: left;
+}
+
+.datos{
+    margin: auto;
+    height: 175px;
+    text-align: center;
+    font-size: 16px;
+    border-bottom: 3px solid #000000;  
+}
+
+.datos-cliente{
+    height: 100px;
+    font-size: 14px;
+    border-bottom: 1px solid #000000;  
+}
+
+.datos-container{
+    width:50%;
+    height: 50%;
+}
+
+.datos-content{
+    text-align: justify;
+    padding: 5px 25px;
+}
+
+
+
+.Shoppinglist-list{
+    margin: auto;
+}
+
+.Shoppinglist-title{
+    border-bottom: 1px solid #000000;
+   
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 5px 0;
+    text-align: center;
+    margin: auto;
+}
+
+
+.Shoppinglist-container{
+    border-bottom: 1px solid #000000;
+
+    padding: 5px 0;
+}
+
+.Shoppinglist-container-content{
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    padding: 5px 0;
+    text-align: center;
+}
+
+
+
+.Shoppinglist-descrip{
+    margin: 2px 15px;
+    float: left;
+}
+
+
+
+

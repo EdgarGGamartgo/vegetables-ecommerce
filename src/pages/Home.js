@@ -96,11 +96,9 @@ function Home() {
                     <ul>
                         <li className="search"><a href="#"><i className="fa fa-search"></i></a></li>
                         <li className="side-menu">
-							<a href="#">
 								<i className="fa fa-shopping-bag"></i>
 								<span className="badge">3</span>
-								<p>My Cart</p>
-							</a>
+								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">My Cart</Link></p>
 						</li>
                     </ul>
                 </div>

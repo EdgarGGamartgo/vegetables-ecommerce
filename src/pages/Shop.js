@@ -8,6 +8,8 @@ import { Store } from './../assets/Store'
 import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import groupBy from 'lodash/groupBy'
+import { connect } from 'react-redux'
+import { buyProduct } from '../redux'
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -35,7 +37,28 @@ function rand() {
     },
   }));
 
-const Shop = () => {
+const mapStateToProps = (state, ownProps) => {
+    /*const itemState = ownProps.cake
+      ? state.cake.numOfCakes
+      : state.iceCream.numOfIceCreams*/
+
+    return {
+        item: 0
+    }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    
+    const dispatchFunction = ownProps.product
+      ? (number) => dispatch(buyProduct(number))
+      : (number) => dispatch(buyProduct(number))
+
+    return {
+        buyItem: dispatchFunction
+    }
+}  
+
+const Shop = (props) => {
 
     const [products, setProducts] = useState(Store)
     const [buyingQuantity, setBuyingQuantity] = useState(0)
@@ -84,6 +107,7 @@ const Shop = () => {
             }
         setProducts(updatedStore)
         setOpen(false)
+        props.buyItem(quantitySet)
         setModalContent({
             title: 'Exito',
             content: `Se ha agregado a carrito ${quantitySet} Kg de ${nameSet}.`,
@@ -157,6 +181,7 @@ const Shop = () => {
                 }
                 setProducts(updatedStore)
                 console.log('Current Product is: ', currentProduct)
+                props.buyItem(quantityProduct)
                 setModalContent({
                     title: 'Exito',
                     content: `Se ha agregado a carrito ${quantityProduct} Kg de ${result[0].name}.`,
@@ -288,11 +313,9 @@ const Shop = () => {
                     <ul>
                         <li className="search"><a href="#"><i className="fa fa-search"></i></a></li>
                         <li className="side-menu">
-							<a href="#">
 								<i className="fa fa-shopping-bag"></i>
 								<span className="badge">3</span>
-								<p>My Cart</p>
-							</a>
+								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">My Cart</Link></p>
 						</li>
                     </ul>
                 </div>
@@ -695,4 +718,4 @@ const Shop = () => {
     )
 }
 
-export default Shop
+export default connect(mapStateToProps, mapDispatchToProps)(Shop)
