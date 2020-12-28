@@ -105,7 +105,7 @@ const Cart = (props) => {
                             <ul className="dropdown-menu">
 								<li><a href="shop.html">Sidebar Shop</a></li>
 								<li><a href="shop-detail.html">Shop Detail</a></li>
-                                <li><a href="cart.html">Cart</a></li>
+                                <li><a href="cart.html">Cart (THIS IS A AWS TEST COMMIT) </a></li>
                                 <li><a href="checkout.html">Checkout</a></li>
                                 <li><a href="my-account.html">My Account</a></li>
                                 <li><a href="wishlist.html">Wishlist</a></li>
