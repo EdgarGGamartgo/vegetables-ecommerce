@@ -10,6 +10,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import { connect } from 'react-redux'
 import { buyProduct } from '../redux'
+import axios from 'axios'
 
 const mapStateToProps = (state, ownProps) => {
     const itemState = ownProps.product
@@ -33,6 +34,20 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }
 
 const Cart = (props) => {
+
+    const [axiosData, setAxiosData] = useState('')
+
+    useEffect(() => {
+        (async () => {
+            const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
+            //const placeHolder = await axios.get('http://52.7.127.131:3001/status')
+            //const placeHolder = await axios.get('http://localhost:3001/status')
+            setAxiosData(placeHolder.data.status)
+            console.log('placeHolder: ', placeHolder)
+        })()
+
+    }, [])
+
     return (
         <div>
             {/* Start Main Top  */}
@@ -201,7 +216,7 @@ const Cart = (props) => {
         <div className="container">
 
              <div className="title-left">
-                 <h3>Shopping List {props.item}</h3>
+                 <h3>Shopping List {props.item} {axiosData}</h3>
             </div>
             
             <div className="datos"> {/* <!-- Ticke Datos-> */}
