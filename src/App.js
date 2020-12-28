@@ -16,7 +16,7 @@ import store from './redux/store'
 //     </div>
 //   );
 // }
-
+// Some text
 // export default App;
 
 const Homepage = () => {
