@@ -39,9 +39,10 @@ const Cart = (props) => {
 
     useEffect(() => {
         (async () => {
-            const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
+            //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
             //const placeHolder = await axios.get('http://52.7.127.131:3001/status')
             //const placeHolder = await axios.get('http://localhost:3001/status')
+            const placeHolder = await axios.get('http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
             setAxiosData(placeHolder.data.status)
             console.log('placeHolder: ', placeHolder)
         })()
