@@ -42,7 +42,13 @@ const Cart = (props) => {
             //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
             //const placeHolder = await axios.get('http://52.7.127.131:3001/status')
             //const placeHolder = await axios.get('http://localhost:3001/status')
-            const placeHolder = await axios.get('http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
+            //const placeHolder = await axios.get('http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
+            const placeHolder = await axios.get('https://cors-everywhere-me.herokuapp.com/http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
+            /*
+            You can use cors everywhere proxy. It is hosted as https and is a proxy so you just need to add it before your api end point url.
+            This will do the trick. I'm personally using this for the same setup you mentioned.
+            And if don't like to use their proxy, you can create your own proxy.
+            */
             setAxiosData(placeHolder.data.status)
             console.log('placeHolder: ', placeHolder)
         })()
