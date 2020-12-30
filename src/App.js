@@ -1,5 +1,6 @@
 import Home from './pages/Home';
 import Shop from './pages/Shop';
+import Inventario from './pages/Inventario'
 import { Contact } from './pages/Contact';
 import  Cart  from './pages/Cart'
 import './css/bootstrap.min.css';
@@ -58,4 +59,12 @@ const CartPage = () => {
 	)
 };
 
-export {Homepage, ShopPage, ContactPage, CartPage } ;
+const InventarioPage = () => {
+	return (
+		<div>
+				<Inventario/>
+		</div>
+	)
+};
+
+export {Homepage, ShopPage, ContactPage, CartPage, InventarioPage } ;
