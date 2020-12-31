@@ -18,7 +18,7 @@ const mapStateToProps = (state, ownProps) => {
       : state.product.productKg
 
     return {
-        item: itemState
+        item: 0//itemState
     }
 }
 

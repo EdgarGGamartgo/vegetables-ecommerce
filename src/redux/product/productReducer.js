@@ -1,14 +1,15 @@
-import { BUY_PRODUCT } from './productTypes'
+import { BUY_PRODUCT, SET_STORE } from './productTypes'
 
-const initialState = {
-    productKg: 30
-}
-
-const productReducer = (state = initialState, action) => {
+const productReducer = (state = [], action) => {
     switch(action.type) {
-        case BUY_PRODUCT: return {
+        // case BUY_PRODUCT: return {
+        //     ...state,
+        //     productKg: state.productKg - action.payload
+        // }
+
+        case SET_STORE: return {
             ...state,
-            productKg: state.productKg - action.payload
+            products: action.payload.products
         }
 
         default: return state

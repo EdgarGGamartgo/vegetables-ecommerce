@@ -9,7 +9,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import groupBy from 'lodash/groupBy'
 import { connect } from 'react-redux'
-import { buyProduct } from '../redux'
+import { buyProduct, settingStore } from '../redux'
+import axios from 'axios'
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -43,24 +44,25 @@ const mapStateToProps = (state, ownProps) => {
       : state.iceCream.numOfIceCreams*/
 
     return {
-        item: 0
+        item: state
     }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
     
-    const dispatchFunction = ownProps.product
-      ? (number) => dispatch(buyProduct(number))
-      : (number) => dispatch(buyProduct(number))
+    // const dispatchFunction = ownProps.product
+    //   ? (number) => dispatch(buyProduct(number))
+    //   : (number) => dispatch(buyProduct(number))
 
     return {
-        buyItem: dispatchFunction
+        //buyItem: dispatchFunction,
+        setStore: (initStore) => dispatch(settingStore(initStore))
     }
 }  
 
 const Shop = (props) => {
 
-    const [products, setProducts] = useState(Store)
+    const [products, setProducts] = useState(props.item.store.products)
     const [buyingQuantity, setBuyingQuantity] = useState(0)
     const [currentProduct, setCurrentProduct] = useState({
         quantity: 0,
@@ -107,7 +109,7 @@ const Shop = (props) => {
             }
         setProducts(updatedStore)
         setOpen(false)
-        props.buyItem(quantitySet)
+        //props.buyItem(quantitySet)
         setModalContent({
             title: 'Exito',
             content: `Se ha agregado a carrito ${quantitySet} Kg de ${nameSet}.`,
@@ -161,8 +163,22 @@ const Shop = (props) => {
     );
 
     useEffect(() => {
-        console.log('State: ', products)
+        (async() => {
+            const products = await axios.get('http://localhost:3001/products')
+            console.log('products:: ', products.data)
+            props.setStore(products.data)
+            setProducts(products.data.products)
+        })()
     }, [])
+
+    const showCurrentStore = () => {
+        console.log('Current state of store: ', props.item)
+    }
+
+    const setGrid = () => {
+        console.log('setGrid ', props.item.store.products)
+        setProducts(props.item.store.products)
+    }
 
     const deleteProduct = (quantityProduct, id) => {
             console.log('How much will you buy? ', quantityProduct)
@@ -181,7 +197,7 @@ const Shop = (props) => {
                 }
                 setProducts(updatedStore)
                 console.log('Current Product is: ', currentProduct)
-                props.buyItem(quantityProduct)
+                //props.buyItem(quantityProduct)
                 setModalContent({
                     title: 'Exito',
                     content: `Se ha agregado a carrito ${quantityProduct} Kg de ${result[0].name}.`,
@@ -393,7 +409,7 @@ const Shop = (props) => {
                         <div className="product-item-filter row">
                             <div className="col-12 col-sm-8 text-center text-sm-left">
                                 <div className="toolbar-sorter-right">
-                                    <span>Sort by </span>
+                                    <span>Sort by </span><button onClick={() => setGrid()}></button>
                                     <select id="basic" className="selectpicker show-tick form-control" data-placeholder="$ USD">
 									<option data-display="Select">Nothing</option>
 									<option value="1">Popularity</option>
@@ -421,15 +437,15 @@ const Shop = (props) => {
                                 <div role="tabpanel" className="tab-pane fade show active" id="grid-view">
                                     <div className="row">
 
-                                        {products.map(product => 
+                                        {products ? products.map(product => 
                                         
-                                        <div className="col-sm-6 col-md-6 col-lg-4 col-xl-4" key={product.id}>
+                                        <div className="col-sm-6 col-md-6 col-lg-4 col-xl-4" key={product.id_producto}>
                                             <div className="products-single fix">
                                                 <div className="box-img-hover">
                                                     <div className="type-lb">
                                                         <p className="sale">Sale</p>
                                                     </div>
-                                                    <img src={product.image} className="img-fluid" alt={product.desc}/>
+                                                    <img src={product.imagen} className="img-fluid" alt={product.nombre_producto}/>
                                                     <div className="mask-icon">
                                                         <ul>
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
@@ -438,6 +454,7 @@ const Shop = (props) => {
                                                         </ul>
                                                         <input type="text" placeholder="Kg" value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value)} />
                                                         <button onClick={() => deleteProduct(buyingQuantity, product.id)} className="cart">Add to Cart</button>
+                                                        <button onClick={() => showCurrentStore()} className="cart">Tell me current store</button>
                                                     </div>
                                                 </div>
                                                 <div className="why-text">
@@ -447,7 +464,7 @@ const Shop = (props) => {
                                             </div>
                                         </div>
                                             
-                                        )}
+                                        ) : null}
                                         
                                     </div>
                                 </div>
