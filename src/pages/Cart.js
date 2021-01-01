@@ -5,10 +5,11 @@ import './../css/custom.css';
 import './../css/style-coche.css'
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
-import { Store } from './../assets/Store'
+import groupBy from 'lodash/groupBy'
 import { Modal } from '@material-ui/core';
+import { Edit, DeleteForever } from '@material-ui/icons'
 import { connect } from 'react-redux'
-import { buyProduct } from '../redux'
+import { buyProduct, emptyCart } from '../redux'
 import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -18,15 +19,42 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import NumberFormat from 'react-number-format'
+import Header from './../components/Header'
+
+const groupingData = (cart) => {
+         console.log('Initial cart: ', cart)
+         const groupC = groupBy(cart, 'id_producto')
+         console.log('groupC: ', groupC)
+
+         let finalCart = []
+                 for (const property in groupC) {
+                     let inQuantity = 0
+                      for (const element of groupC[`${property}`]) {
+                          inQuantity = inQuantity + Number(element.order)                    
+                     }
+                      finalCart.push({
+                         id_producto:  property,
+                         order: inQuantity,
+                         unidad: groupC[`${property}`][0].unidad,
+                         desc: groupC[`${property}`][0].desc,
+                         price: groupC[`${property}`][0].price
+                      })
+                 }
+         console.log('Grouped cart: ', finalCart)
+         return finalCart
+}
 
 const mapStateToProps = (state, ownProps) => {
     // const itemState = ownProps.product
     //   ? state.product.productKg
     //   : state.product.productKg
 
+    const currentCart = groupingData(state.cart.products)    
+
     return {
         item: 0, //itemState
-        cart: state.cart.products
+        cart: currentCart
     }
 }
 
@@ -37,7 +65,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       : () => dispatch(buyProduct())
 
     return {
-        buyItem: dispatchFunction
+        buyItem: dispatchFunction,
+        declineCart: () => dispatch(emptyCart())
     }
 }
 
@@ -64,7 +93,18 @@ const Cart = (props) => {
     const [axiosData, setAxiosData] = useState('')
     const [today, setToday] = useState(new Date().toLocaleDateString())
     const [cart, setCart] = useState([])
+    const [folio, setFolio] = useState('')
 // Use this https://www.npmjs.com/package/invoice-number  INVOICE NUMBER
+
+    const buyCart = () => {
+        console.log("BUY WHOLE CART")
+    }
+
+    const declineCart = () => {
+        console.log("DECLINE WHOLE CART")
+        props.declineCart()
+    } 
+
     useEffect(() => {
         (async () => {
             //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
@@ -72,6 +112,11 @@ const Cart = (props) => {
             //const placeHolder = await axios.get('http://localhost:3001/status')
             //const placeHolder = await axios.get('http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
             const placeHolder = await axios.get('https://cors-everywhere-me.herokuapp.com/http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
+            const invoice = await axios.get('http://localhost:3001/invoice')
+            const guard = invoice && invoice.data && invoice.data.invoice
+            if (guard) {
+                setFolio(invoice.data.invoice)
+            }
             /*
             You can use cors everywhere proxy. It is hosted as https and is a proxy so you just need to add it before your api end point url.
             This will do the trick. I'm personally using this for the same setup you mentioned.
@@ -79,7 +124,6 @@ const Cart = (props) => {
             */
             setAxiosData(placeHolder.data.status)
             setCart(props.cart)
-            console.log('placeHolder: ', placeHolder)
         })()
 
     }, [])
@@ -132,89 +176,7 @@ const Cart = (props) => {
      {/* End Main Top */}
 
 {/* <!-- Start Main Top --> */}
-<header className="main-header">
-        {/* <!-- Start Navigation --> */}
-        <nav className="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
-            <div className="container">
-                {/* <!-- Start Header Navigation --> */}
-                <div className="navbar-header">
-                    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
-                    <i className="fa fa-bars"></i>
-                </button>
-                    <a className="navbar-brand" href="index.html"><img src="images/logo.png" className="logo" alt=""/></a>
-                </div>
-                {/* <!-- End Header Navigation --> */}
-
-                {/* <!-- Collect the nav links, forms, and other content for toggling --> */}
-                <div className="collapse navbar-collapse" id="navbar-menu">
-                    <ul className="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
-                         <li className="nav-item active"><Link to='/' className="nav-link" data-toggle="dropdown">HOME</Link></li>
-
-                        <li className="nav-item"><a className="nav-link" href="about.html">About Us</a></li>
-                        <li className="dropdown">
-                            <Link to='/shop' className="nav-link dropdown-toggle arrow" data-toggle="dropdown">SHOP</Link>
-                            <ul className="dropdown-menu">
-								<li><a href="shop.html">Sidebar Shop</a></li>
-								<li><a href="shop-detail.html">Shop Detail</a></li>
-                                <li><a href="cart.html">Cart (THIS IS A AWS TEST COMMIT) </a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="my-account.html">My Account</a></li>
-                                <li><a href="wishlist.html">Wishlist</a></li>
-                            </ul>
-                        </li>
-                        <li className="dropdown">
-                            <a className="nav-link dropdown-toggle arrow" data-toggle="dropdown" href="/coche">Gallery</a>
-                        </li>
-                        {/* <!-- <li className="nav-item"><a className="nav-link" href="gallery.html">Gallery</a></li> --> */}
-                        <li className="nav-item"><a className="nav-link" href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                {/* <!-- /.navbar-collapse --> */}
-
-                {/* <!-- Start Atribute Navigation --> */}
-                <div className="attr-nav">
-                    <ul>
-                        <li className="search"><a href="#"><i className="fa fa-search"></i></a></li>
-                        <li className="side-menu">
-								<i className="fa fa-shopping-bag"></i>
-								<span className="badge">3</span>
-								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">My Cart</Link></p>
-						</li>
-                    </ul>
-                </div>
-                {/* <!-- End Atribute Navigation --> */}
-            </div>
-            {/* <!-- Start Side Menu --> */}
-            <div className="side">
-                <a href="#" className="close-side"><i className="fa fa-times"></i></a>
-                <li className="cart-box">
-                    <ul className="cart-list">
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-01.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Delica omtantur </a></h6>
-                            <p>1x - <span className="price">$80.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-02.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Omnes ocurreret</a></h6>
-                            <p>1x - <span className="price">$60.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-03.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Agam facilisis</a></h6>
-                            <p>1x - <span className="price">$40.00</span></p>
-                        </li>
-                        <li className="total">
-                            <a href="#" className="btn btn-default hvr-hover btn-cart">VIEW CART</a>
-                            <span className="float-right"><strong>Total</strong>: $180.00</span>
-                        </li>
-                    </ul>
-                </li>
-            </div>
-            {/* <!-- End Side Menu --> */}
-        </nav>
-        {/* <!-- End Navigation --> */}
-    </header>
+      <Header/>
     {/* <!-- End Main Top --> */}
 
 
@@ -236,10 +198,10 @@ const Cart = (props) => {
             <div className="row">
                 <div className="col-lg-12">
                     <h2>Shop</h2>
-                    <ul className="breadcrumb">
+                    {/* <ul className="breadcrumb">
                         <li className="breadcrumb-item"><a href="#">Home</a></li>
                         <li className="breadcrumb-item active">Shop</li>
-                    </ul>
+                    </ul> */}
                 </div>
             </div>
         </div>
@@ -252,7 +214,7 @@ const Cart = (props) => {
         <div className="container">
 
              <div className="title-left">
-                 <h3>Shopping List {props.cart[0].id_producto} {axiosData}</h3>
+                 <h3>Lista de compras</h3>
             </div>
             
             <div className="datos"> {/* <!-- Ticke Datos-> */}
@@ -263,7 +225,7 @@ const Cart = (props) => {
                     <p>Telefono: 111149456115</p>
                     <div>
                         <div className="right">
-                               <p>Folio No 00001. </p>                  
+                               <p>Folio No: {folio}. </p>                  
                         </div>
 
                         <div className="left">              
@@ -301,6 +263,7 @@ const Cart = (props) => {
             <TableCell align="right">Descripcion</TableCell>
             <TableCell align="right">P.U.</TableCell>
             <TableCell align="right">Importe</TableCell>
+            <TableCell align="right">Opciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -308,17 +271,18 @@ const Cart = (props) => {
             <TableRow key={row.id_producto}>
               <TableCell component="th" scope="row">
                 {row.order}
+                {/* <input type="text" style={{width: "50px"}} value={row.order} onChange={(e) => editQuantity(e.target.value, row.id_producto)}/> */}
               </TableCell>
-              <TableCell align="right">as</TableCell>
-              <TableCell align="right">qw</TableCell>
-              <TableCell align="right">zx</TableCell>
-              <TableCell align="right">poi</TableCell>
+              <TableCell align="right">{row.unidad}</TableCell>
+              <TableCell align="right">{row.desc}</TableCell>
+              <TableCell align="right">{row.price}</TableCell>
+              <TableCell align="right"><NumberFormat value={Number(row.price) * Number(row.order)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+              <TableCell align="right"><Edit style={{cursor:'pointer'}} onClick={() => console.log('Click on Edit')}/><DeleteForever style={{cursor:'pointer'}} onClick={() => console.log('Click on Delete')}/></TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
-
             <div className="title-left"> {/* <!-- Line end--> */}
                 <h3></h3>
             </div>
@@ -327,8 +291,9 @@ const Cart = (props) => {
             <div className="price-box-slider">
                                 
                 <p>
-                     <input type="text" id="amount" readOnly />
-                     <button className="btn hvr-hover" type="submit">Realizar compra</button>
+                     {/* <input type="text" id="amount" readOnly /> */}
+                     <button className="btn hvr-hover" type="submit" onClick={() => buyCart()}>Realizar compra</button>
+                     <button className="btn hvr-hover" type="submit" onClick={() => declineCart()}>Rechazar compra</button>
                 </p>
             </div>
 

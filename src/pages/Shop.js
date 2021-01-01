@@ -11,6 +11,7 @@ import groupBy from 'lodash/groupBy'
 import { connect } from 'react-redux'
 import { buyProduct, settingStore, addProductCart } from '../redux'
 import axios from 'axios'
+import Header from './../components/Header'
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -75,11 +76,16 @@ const Shop = (props) => {
         content: `Su compra es invalida. Solamente tenemos ${currentProduct.quantity} Kg de ${currentProduct.name}. Desea comprar los kilos disponibles?`,
     })
     const [cart, setCart] = useState([])
-
+    const [productFilter, setProductFilter] = useState('') 
     const classes = useStyles();
     // getModalStyle is not a pure function, we roll the style only on the first render
     const [modalStyle] = useState(getModalStyle);
     const [open, setOpen] = useState(false);
+
+    const sortingGrid = (sortBy) => {
+        console.log('sortBy: ', sortBy)
+        setProductFilter(sortBy)
+    }
 
     const goToCart = () => {
         setOpen(false)
@@ -114,7 +120,10 @@ const Shop = (props) => {
         //setProducts(updatedStore)
         props.setProductToCart([{
             id_producto: currentProduct.id_producto,
-            order: Number(quantitySet)
+            order: Number(quantitySet),
+            unidad: currentProduct.unidad,
+            desc: currentProduct.nombre_producto,
+            price: currentProduct.costo
         }])
         setOpen(false)
         //props.buyItem(quantitySet)
@@ -211,7 +220,10 @@ const Shop = (props) => {
                 //props.buyItem(quantityProduct)
                 props.setProductToCart([{
                     id_producto: currentProduct[0].id_producto,
-                    order: Number(quantityProduct)
+                    order: Number(quantityProduct),
+                    unidad: currentProduct[0].unidad,
+                    desc: currentProduct[0].nombre_producto,
+                    price: currentProduct[0].costo
                 }])
                 setModalContent({
                     title: 'Exito',
@@ -310,86 +322,7 @@ const Shop = (props) => {
      {/* End Main Top */}
 
 {/* <!-- Start Main Top --> */}
-<header className="main-header">
-        {/* <!-- Start Navigation --> */}
-        <nav className="navbar navbar-expand-lg navbar-light bg-light navbar-default bootsnav">
-            <div className="container">
-                {/* <!-- Start Header Navigation --> */}
-                <div className="navbar-header">
-                    <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbars-rs-food" aria-expanded="false" aria-label="Toggle navigation">
-                    <i className="fa fa-bars"></i>
-                </button>
-                    <a className="navbar-brand" href="index.html"><img src="images/logo.png" className="logo" alt=""/></a>
-                </div>
-                {/* <!-- End Header Navigation --> */}
-
-                {/* <!-- Collect the nav links, forms, and other content for toggling --> */}
-                <div className="collapse navbar-collapse" id="navbar-menu">
-                    <ul className="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
-                         <li className="nav-item active"><Link to='/' className="nav-link" data-toggle="dropdown">HOME</Link></li>
-
-                        <li className="nav-item"><a className="nav-link" href="about.html">About Us</a></li>
-                        <li className="dropdown">
-                            <Link to='/shop' className="nav-link dropdown-toggle arrow" data-toggle="dropdown">SHOP</Link>
-                            <ul className="dropdown-menu">
-								<li><a href="shop.html">Sidebar Shop</a></li>
-								<li><a href="shop-detail.html">Shop Detail</a></li>
-                                <li><a href="cart.html">Cart</a></li>
-                                <li><a href="checkout.html">Checkout</a></li>
-                                <li><a href="my-account.html">My Account</a></li>
-                                <li><a href="wishlist.html">Wishlist</a></li>
-                            </ul>
-                        </li>
-                        <li className="nav-item"><a className="nav-link" href="gallery.html">Gallery</a></li>
-                        <li className="nav-item"><a className="nav-link" href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                {/* <!-- /.navbar-collapse --> */}
-
-                {/* <!-- Start Atribute Navigation --> */}
-                <div className="attr-nav">
-                    <ul>
-                        <li className="search"><a href="#"><i className="fa fa-search"></i></a></li>
-                        <li className="side-menu">
-								<i className="fa fa-shopping-bag"></i>
-								<span className="badge">3</span>
-								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">My Cart</Link></p>
-						</li>
-                    </ul>
-                </div>
-                {/* <!-- End Atribute Navigation --> */}
-            </div>
-            {/* <!-- Start Side Menu --> */}
-            <div className="side">
-                <a href="#" className="close-side"><i className="fa fa-times"></i></a>
-                <li className="cart-box">
-                    <ul className="cart-list">
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-01.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Delica omtantur </a></h6>
-                            <p>1x - <span className="price">$80.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-02.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Omnes ocurreret</a></h6>
-                            <p>1x - <span className="price">$60.00</span></p>
-                        </li>
-                        <li>
-                            <a href="#" className="photo"><img src="images/img-pro-03.jpg" className="cart-thumb" alt="" /></a>
-                            <h6><a href="#">Agam facilisis</a></h6>
-                            <p>1x - <span className="price">$40.00</span></p>
-                        </li>
-                        <li className="total">
-                            <a href="#" className="btn btn-default hvr-hover btn-cart">VIEW CART</a>
-                            <span className="float-right"><strong>Total</strong>: $180.00</span>
-                        </li>
-                    </ul>
-                </li>
-            </div>
-            {/* <!-- End Side Menu --> */}
-        </nav>
-        {/* <!-- End Navigation --> */}
-    </header>
+      <Header/>
     {/* <!-- End Main Top --> */}
 
 
@@ -411,10 +344,10 @@ const Shop = (props) => {
             <div className="row">
                 <div className="col-lg-12">
                     <h2>Shop</h2>
-                    <ul className="breadcrumb">
+                    {/* <ul className="breadcrumb">
                         <li className="breadcrumb-item"><a href="#">Home</a></li>
                         <li className="breadcrumb-item active">Shop</li>
-                    </ul>
+                    </ul> */}
                 </div>
             </div>
         </div>
@@ -428,22 +361,21 @@ const Shop = (props) => {
             <div className="row">
                 <div className="col-xl-9 col-lg-9 col-sm-12 col-xs-12 shop-content-right">
                     <div className="right-product-box">
-                        <div className="product-item-filter row">
+                         <div className="product-item-filter row">
                             <div className="col-12 col-sm-8 text-center text-sm-left">
                                 <div className="toolbar-sorter-right">
-                                    <span>Sort by </span>
-                                    {/* <button onClick={() => console.log('This is MY CART: ', props.cart)}></button> */}
-                                    <select id="basic" className="selectpicker show-tick form-control" data-placeholder="$ USD">
+                                    <span>Búsqueda por '{productFilter === '' ? 'Todos': productFilter}'</span>
+                                    {/* <select id="basic" className="selectpicker show-tick form-control" data-placeholder="$ USD">
 									<option data-display="Select">Nothing</option>
 									<option value="1">Popularity</option>
 									<option value="2">High Price → High Price</option>
 									<option value="3">Low Price → High Price</option>
 									<option value="4">Best Selling</option>
-								</select>
+								</select> */}
                                 </div>
-                                <p>Showing all 4 results</p>
+                                {/* <p>Mostrando {} resultados</p> */}
                             </div>
-                            <div className="col-12 col-sm-4 text-center text-sm-right">
+                            {/*<div className="col-12 col-sm-4 text-center text-sm-right">
                                 <ul className="nav nav-tabs ml-auto">
                                     <li>
                                         <a className="nav-link active" href="#grid-view" data-toggle="tab"> <i className="fa fa-th"></i> </a>
@@ -452,8 +384,8 @@ const Shop = (props) => {
                                         <a className="nav-link" href="#list-view" data-toggle="tab"> <i className="fa fa-list-ul"></i> </a>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
+                            </div> */}
+                        </div> 
 
                         <div className="product-categorie-box">
                             <div className="tab-content">
@@ -478,13 +410,13 @@ const Shop = (props) => {
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
                                                         */}
                                                             </ul> 
-                                                        <input type="text" placeholder="Kg" value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value, product.id_producto)} />
+                                                        <input type="text" placeholder={product.unidad} value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value, product.id_producto)} />
                                                         <button onClick={() => deleteProduct(buyingQuantity, product.id_producto)} className="cart">Agregar a carrito</button>
                                                     </div>
                                                 </div>
                                                 <div className="why-text">
                                                     <h4>{product.nombre_producto}</h4>
-                                                    <h5> $ {product.costo} MXN/Kg</h5>
+                                                    <h5> $ {product.costo} MXN/{product.unidad}</h5>
                                                 </div>
                                             </div>
                                         </div>
@@ -599,11 +531,11 @@ const Shop = (props) => {
                     <div className="product-categori">
                         <div className="search-product">
                             <form action="#">
-                                <input className="form-control" type="text"/>
+                                <input className="form-control" type="text" placeholder="Jitomate, fresa, ..." value={productFilter} onChange={(e) => sortingGrid(e.target.value)} />
                                 <button type="submit"> <i className="fa fa-search"></i> </button>
                             </form>
                         </div>
-                        <div className="filter-sidebar-left">
+                        {/* <div className="filter-sidebar-left">
                             <div className="title-left">
                                 <h3>Categories</h3>
                             </div>
@@ -637,8 +569,8 @@ const Shop = (props) => {
                                 <a href="#" className="list-group-item list-group-item-action"> Grocery <small className="text-muted">(11)</small></a>
                                 <a href="#" className="list-group-item list-group-item-action"> Grocery <small className="text-muted">(22)</small></a>
                             </div>
-                        </div>
-                        <div className="filter-price-left">
+                        </div> */}
+                        {/* <div className="filter-price-left">
                             <div className="title-left">
                                 <h3>Price</h3>
                             </div>
@@ -649,7 +581,7 @@ const Shop = (props) => {
                                     <button className="btn hvr-hover" type="submit">Filter</button>
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

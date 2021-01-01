@@ -25,12 +25,14 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 const Homepage = () => {
 	return (
+		<Provider store={store}>
 		<div>
         <Home/>
 				{/* <Header/>
 				<h1>Homepage </h1>
 				<Link to='/about'>Go to Aboutpage</Link> */}
 		</div>
+		</Provider>
 	)
 };
 
