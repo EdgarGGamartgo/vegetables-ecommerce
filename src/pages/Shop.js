@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import groupBy from 'lodash/groupBy'
 import { connect } from 'react-redux'
-import { buyProduct, settingStore } from '../redux'
+import { buyProduct, settingStore, addProductCart } from '../redux'
 import axios from 'axios'
 
 function rand() {
@@ -44,7 +44,8 @@ const mapStateToProps = (state, ownProps) => {
       : state.iceCream.numOfIceCreams*/
 
     return {
-        item: state
+        item: state,
+        cart: state
     }
 }
 
@@ -56,7 +57,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
     return {
         //buyItem: dispatchFunction,
-        setStore: (initStore) => dispatch(settingStore(initStore))
+        setStore: (initStore) => dispatch(settingStore(initStore)),
+        setProductToCart: (product) => dispatch(addProductCart(product)),
     }
 }  
 
@@ -94,48 +96,54 @@ const Shop = (props) => {
 
     const authPurchase = () => {
         // currentProduct
-            let quantitySet = currentProduct.quantity
-            let nameSet = currentProduct.name
+            let quantitySet = currentProduct.existencia
+            let setPro = currentProduct
+            setPro.existencia = 0
+            let nameSet = currentProduct.nombre_producto
             setModalContent({
                 title: 'Compra invalida',
-                content: `Su compra es invalida. Solamente tenemos ${currentProduct.quantity} Kg de ${currentProduct.name}. Desea comprar los kilos disponibles?`,
+                content: `Su compra es invalida. Solamente tenemos ${quantitySet} Kg de ${nameSet}. Desea comprar los kilos disponibles?`,
                 ok: true
             })
-            let updatedStore = products
-            for (var i=0; i < products.length; i++) {
-                if (products[i].id === currentProduct.id) {
-                    updatedStore[i].quantity = 0
-                }
-            }
-        setProducts(updatedStore)
+            // let updatedStore = products
+            // for (var i=0; i < products.length; i++) {
+            //     if (products[i].id === currentProduct.id) {
+            //         updatedStore[i].quantity = 0
+            //     }
+            // }
+        //setProducts(updatedStore)
+        props.setProductToCart([{
+            id_producto: currentProduct.id_producto,
+            order: Number(quantitySet)
+        }])
         setOpen(false)
         //props.buyItem(quantitySet)
         setModalContent({
             title: 'Exito',
-            content: `Se ha agregado a carrito ${quantitySet} Kg de ${nameSet}.`,
+            content: `Se ha agregado a carrito 'avail' Kg de 'name'.`,
             ok: false
         })
-        let newCart = cart
-        newCart.push({
-            quantitySet: quantitySet,
-            id: currentProduct.id
-        })
-        setCart(newCart)
+        // let newCart = cart
+        // newCart.push({
+        //     quantitySet: quantitySet,
+        //     id: currentProduct.id
+        // })
+        // setCart(newCart)
         setOpen(true)
-        console.log('New Store: ', products)
-        const groupC = groupBy(cart, 'id')
-        let finalCart = []
-                for (const property in groupC) {
-                    let inQuantity = 0
-                     for (const element of groupC[`${property}`]) {
-                         inQuantity = inQuantity + Number(element.quantity)                    
-                    }
-                     finalCart.push({
-                        id:  property,
-                        quantity: inQuantity
-                     })
-                }
-                setCart(finalCart)
+        // console.log('New Store: ', products)
+        // const groupC = groupBy(cart, 'id')
+        // let finalCart = []
+        //         for (const property in groupC) {
+        //             let inQuantity = 0
+        //              for (const element of groupC[`${property}`]) {
+        //                  inQuantity = inQuantity + Number(element.quantity)                    
+        //             }
+        //              finalCart.push({
+        //                 id:  property,
+        //                 quantity: inQuantity
+        //              })
+        //         }
+        //         setCart(finalCart)
     }
 
     const nonAuthPurchase = () => {
@@ -181,63 +189,77 @@ const Shop = (props) => {
     }
 
     const deleteProduct = (quantityProduct, id) => {
-            console.log('How much will you buy? ', quantityProduct)
-            let result = products.filter(product => product.id === id)
-            setCurrentProduct(result[0])
-            console.log('Which product did you choose? ', result)
-            if (quantityProduct <= result[0].quantity) {
-                const newStore = result[0].quantity - quantityProduct
-                console.log('Which is the new quantity? ', newStore)
-                let updatedStore = products
-                for (var i=0; i < products.length; i++) {
-                    if (products[i].id === id) {
-                        result[0].quantity = newStore
-                        updatedStore[i] = result[0]
-                    }
-                }
-                setProducts(updatedStore)
-                console.log('Current Product is: ', currentProduct)
+            // console.log('How much will you buy? ', quantityProduct)
+            // let result = products.filter(product => product.id === id)
+            // console.log('Which product did you choose? ', result)
+            console.log('props.item: ', props.item)
+            let currentProduct = props.item.store.products.filter(p => p.id_producto === id)
+            console.log('currentProduct: ', currentProduct, id)
+            setCurrentProduct(currentProduct[0])
+            if (quantityProduct <= currentProduct[0].existencia) {
+                // const newStore = result[0].quantity - quantityProduct
+                // console.log('Which is the new quantity? ', newStore)
+                // let updatedStore = products
+                // for (var i=0; i < products.length; i++) {
+                //     if (products[i].id === id) {
+                //         result[0].quantity = newStore
+                //         updatedStore[i] = result[0]
+                //     }
+                // }
+                // setProducts(updatedStore)
+                // console.log('Current Product is: ', currentProduct)
                 //props.buyItem(quantityProduct)
+                props.setProductToCart([{
+                    id_producto: currentProduct[0].id_producto,
+                    order: Number(quantityProduct)
+                }])
                 setModalContent({
                     title: 'Exito',
-                    content: `Se ha agregado a carrito ${quantityProduct} Kg de ${result[0].name}.`,
+                    content: `Se ha agregado a carrito ${quantityProduct} Kg de ${currentProduct[0].nombre_producto}.`,
                     ok: false
                 })
-                let newCart = cart
-                newCart.push({
-                    quantity: quantityProduct,
-                    id 
-                })
-                setCart(newCart)
+                // let newCart = cart
+                // newCart.push({
+                //     quantity: quantityProduct,
+                //     id 
+                // })
+                // setCart(newCart)
                 setOpen(true);
-                const groupC = groupBy(cart, 'id')
-                let finalCart = []
-                for (const property in groupC) {
-                    let inQuantity = 0
-                     for (const element of groupC[`${property}`]) {
-                         inQuantity = inQuantity + Number(element.quantity)                    
-                    }
-                     finalCart.push({
-                        id:  property,
-                        quantity: inQuantity
-                     })
-                }
-                setCart(finalCart)
-                console.log('finalCart: ', finalCart)
+                // const groupC = groupBy(cart, 'id')
+                // let finalCart = []
+                // for (const property in groupC) {
+                //     let inQuantity = 0
+                //      for (const element of groupC[`${property}`]) {
+                //          inQuantity = inQuantity + Number(element.quantity)                    
+                //     }
+                //      finalCart.push({
+                //         id:  property,
+                //         quantity: inQuantity
+                //      })
+                // }
+                // setCart(finalCart)
+                // console.log('finalCart: ', finalCart)
             } else {
                 setModalContent({
                     title: 'Compra invalida',
-                    content: `Su compra es invalida. Solamente tenemos ${result[0].quantity} Kg de ${result[0].name}. Desea comprar los kilos disponibles?`,
+                    content: `Su compra es invalida. Solamente tenemos ${currentProduct[0].existencia} Kg de ${currentProduct[0].nombre_producto} ¿ Desea comprar los kilos disponibles?`,
                     ok: true
                 })
-                console.log(`There's only ${result[0].quantity} Kg in store. Whould you like to buy only the remaining ${result[0].quantity} Kg?`)
+                //console.log(`There's only ${result[0].quantity} Kg in store. Whould you like to buy only the remaining ${result[0].quantity} Kg?`)
                 setOpen(true);
             }
-            
     }
 
-    const changeBuyingQuitity = (quantity) => {
+    const changeBuyingQuitity = (quantity, id) => {
+        // Set product id and buying quantity to Redux Store tp set Cart items
+        console.log('This is my current store: ', props.item)
         setBuyingQuantity(quantity)
+        // const addedProduct = props.item.store.products.filter(product => {
+        //     return product.id_producto === id
+        // })
+        // console.log('Current product: ', addedProduct)
+        // props.setProductToCart(addedProduct[0])
+        
     }
 
     return (
@@ -409,7 +431,8 @@ const Shop = (props) => {
                         <div className="product-item-filter row">
                             <div className="col-12 col-sm-8 text-center text-sm-left">
                                 <div className="toolbar-sorter-right">
-                                    <span>Sort by </span><button onClick={() => setGrid()}></button>
+                                    <span>Sort by </span>
+                                    {/* <button onClick={() => console.log('This is MY CART: ', props.cart)}></button> */}
                                     <select id="basic" className="selectpicker show-tick form-control" data-placeholder="$ USD">
 									<option data-display="Select">Nothing</option>
 									<option value="1">Popularity</option>
@@ -443,23 +466,25 @@ const Shop = (props) => {
                                             <div className="products-single fix">
                                                 <div className="box-img-hover">
                                                     <div className="type-lb">
-                                                        <p className="sale">Sale</p>
+                                                        <p className="sale">Venta</p>
+                                                        {/* <p className="sale">{product.nombre_producto}</p> */}
                                                     </div>
                                                     <img src={product.imagen} className="img-fluid" alt={product.nombre_producto}/>
-                                                    <div className="mask-icon">
-                                                        <ul>
+                                                    <div className="mask-icon" > 
+                                                         <ul>
+                                                        {/*
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
                                                             <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
-                                                        </ul>
-                                                        <input type="text" placeholder="Kg" value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value)} />
-                                                        <button onClick={() => deleteProduct(buyingQuantity, product.id)} className="cart">Add to Cart</button>
-                                                        <button onClick={() => showCurrentStore()} className="cart">Tell me current store</button>
+                                                        */}
+                                                            </ul> 
+                                                        <input type="text" placeholder="Kg" value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value, product.id_producto)} />
+                                                        <button onClick={() => deleteProduct(buyingQuantity, product.id_producto)} className="cart">Agregar a carrito</button>
                                                     </div>
                                                 </div>
                                                 <div className="why-text">
-                                                    <h4>{product.name}</h4>
-                                                    <h5> $ {product.price} MXN/Kg</h5>
+                                                    <h4>{product.nombre_producto}</h4>
+                                                    <h5> $ {product.costo} MXN/Kg</h5>
                                                 </div>
                                             </div>
                                         </div>

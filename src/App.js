@@ -10,6 +10,9 @@ import './css/custom.css';
 import { Provider } from 'react-redux'
 import store from './redux/store'
 
+import { persistor } from './redux/store'
+import { PersistGate } from 'redux-persist/integration/react'
+
 // function App() {
 //   return (
 //     <div>
@@ -34,9 +37,11 @@ const Homepage = () => {
 const ShopPage = () => {
 	return (
 		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
 		<div>
 				<Shop/>
 		</div>
+			</PersistGate>
 		</Provider>
 	)
 };
@@ -52,9 +57,11 @@ const ContactPage = () => {
 const CartPage = () => {
 	return (
 		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
 		<div>
 				<Cart/>
 		</div>
+			</PersistGate>
 		</Provider>
 	)
 };

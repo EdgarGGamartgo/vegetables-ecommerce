@@ -6,19 +6,27 @@ import './../css/style-coche.css'
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import { Store } from './../assets/Store'
-import { makeStyles } from '@material-ui/core/styles';
 import { Modal } from '@material-ui/core';
 import { connect } from 'react-redux'
 import { buyProduct } from '../redux'
 import axios from 'axios'
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 const mapStateToProps = (state, ownProps) => {
-    const itemState = ownProps.product
-      ? state.product.productKg
-      : state.product.productKg
+    // const itemState = ownProps.product
+    //   ? state.product.productKg
+    //   : state.product.productKg
 
     return {
-        item: 0//itemState
+        item: 0, //itemState
+        cart: state.cart.products
     }
 }
 
@@ -33,10 +41,30 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     }
 }
 
+const useStyles = makeStyles({
+    table: {
+      minWidth: 650,
+    },
+  });
+  
+  function createData(name, calories, fat, carbs, protein) {
+    return { name, calories, fat, carbs, protein };
+  }
+  
+  const rows = [
+    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+    createData('Eclair', 262, 16.0, 24, 6.0),
+    createData('Cupcake', 305, 3.7, 67, 4.3),
+    createData('Gingerbread', 356, 16.0, 49, 3.9),
+  ];
+
 const Cart = (props) => {
-
+    const classes = useStyles();
     const [axiosData, setAxiosData] = useState('')
-
+    const [today, setToday] = useState(new Date().toLocaleDateString())
+    const [cart, setCart] = useState([])
+// Use this https://www.npmjs.com/package/invoice-number  INVOICE NUMBER
     useEffect(() => {
         (async () => {
             //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
@@ -50,6 +78,7 @@ const Cart = (props) => {
             And if don't like to use their proxy, you can create your own proxy.
             */
             setAxiosData(placeHolder.data.status)
+            setCart(props.cart)
             console.log('placeHolder: ', placeHolder)
         })()
 
@@ -223,7 +252,7 @@ const Cart = (props) => {
         <div className="container">
 
              <div className="title-left">
-                 <h3>Shopping List {props.item} {axiosData}</h3>
+                 <h3>Shopping List {props.cart[0].id_producto} {axiosData}</h3>
             </div>
             
             <div className="datos"> {/* <!-- Ticke Datos-> */}
@@ -238,7 +267,7 @@ const Cart = (props) => {
                         </div>
 
                         <div className="left">              
-                            <p>Fecha: 23-12-2020</p>
+                            <p>Fecha: {today}</p>
                         </div>            
                     </div>                
             </div>
@@ -261,45 +290,34 @@ const Cart = (props) => {
                     <p>R.F.C: LIEM952566gjkdtr58</p>
                 </div>
                                                          
-            </div>
-            <div className="row " >
-                
-                <div className="Shoppinglist-list">{/* <!-- Ticke-Nota --> */}
-                        {/* <!-- titles--> */}
-                    <div className="Shoppinglist-title"> 
-                        <div className="Shoppinglist-descrip">
-                             <span>Cantidad </span>
-                        </div>
-
-                        <div className="Shoppinglist-descrip">
-                            <span>U.M </span>
-                        </div>
-                                
-                        <div className="Shoppinglist-descrip">
-                            <span>Descripcion </span>
-                        </div>
-                                
-                        <div className="Shoppinglist-descrip">
-                            <span>P.U.</span>
-                        </div>
-
-                        <div className="Shoppinglist-descrip">
-                            <span>Importe</span>
-                        </div>
-                                
-                        </div>
-                        {/* <!-- End titles --> */}
-
-
-                        <div className="Shoppinglist-container">
-
-                            <div className="Shoppinglist-container-content">
-                                Datos de la nota
-                            </div>
-                            
-                    </div>                                
-                </div>
             </div>    
+
+            <TableContainer component={Paper}>
+      <Table className={classes.table} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Cantidad</TableCell>
+            <TableCell align="right">U.M</TableCell>
+            <TableCell align="right">Descripcion</TableCell>
+            <TableCell align="right">P.U.</TableCell>
+            <TableCell align="right">Importe</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {props.cart.map((row) => (
+            <TableRow key={row.id_producto}>
+              <TableCell component="th" scope="row">
+                {row.order}
+              </TableCell>
+              <TableCell align="right">as</TableCell>
+              <TableCell align="right">qw</TableCell>
+              <TableCell align="right">zx</TableCell>
+              <TableCell align="right">poi</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
 
             <div className="title-left"> {/* <!-- Line end--> */}
                 <h3></h3>
