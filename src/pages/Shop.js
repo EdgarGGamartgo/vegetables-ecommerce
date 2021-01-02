@@ -129,7 +129,7 @@ const Shop = (props) => {
         //props.buyItem(quantitySet)
         setModalContent({
             title: 'Exito',
-            content: `Se ha agregado a carrito 'avail' Kg de 'name'.`,
+            content: `Se ha agregado a carrito ${quantitySet} Kg de ${currentProduct.nombre_producto}.`,
             ok: false
         })
         // let newCart = cart
