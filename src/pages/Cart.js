@@ -9,7 +9,7 @@ import groupBy from 'lodash/groupBy'
 import { Modal, FormControl, Input, InputLabel, FormHelperText, Grid } from '@material-ui/core';
 import { Edit, DeleteForever } from '@material-ui/icons'
 import { connect } from 'react-redux'
-import { buyProduct, emptyCart } from '../redux'
+import { buyProduct, emptyCart, editProduct, deleteProduct, addProductCart } from '../redux'
 import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -21,6 +21,21 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import NumberFormat from 'react-number-format'
 import Header from './../components/Header'
+
+function rand() {
+    return Math.round(Math.random() * 20) - 10;
+  }
+  
+  function getModalStyle() {
+    const top = 50 + rand();
+    const left = 50 + rand();
+  
+    return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+    };
+  }
 
 const groupingData = (cart) => {
          console.log('Initial cart: ', cart)
@@ -66,7 +81,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 
     return {
         buyItem: dispatchFunction,
-        declineCart: () => dispatch(emptyCart())
+        declineCart: () => dispatch(emptyCart()),
+        editThisProduct: (product) => dispatch(editProduct(product)),
+        deleteThisProduct: (product) => dispatch(deleteProduct(product)),
+        addThisProduct: (product) => dispatch(addProductCart(product)),
     }
 }
 
@@ -99,13 +117,32 @@ const useStyles = makeStyles({
     createData('Gingerbread', 356, 16.0, 49, 3.9),
   ];
 
+  const useStylesModal = makeStyles((theme) => ({
+    paper: {
+      position: 'absolute',
+      justify: 'center',
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[1],
+      padding: theme.spacing(2, 4, 3),
+    },
+  }));
+
 const Cart = (props) => {
+    const classesModal = useStylesModal();
     const classes = useStyles();
     const classesGrid = useStylesGrid();
     const [axiosData, setAxiosData] = useState('')
     const [today, setToday] = useState(new Date().toLocaleDateString())
     const [cart, setCart] = useState([])
+    const [open, setOpen] = useState(false);
     const [folio, setFolio] = useState('')
+    const [modalStyle] = useState(getModalStyle);
+    const [modalContent, setModalContent] = useState({
+        title: 'Modifique la cantidad a comprar',
+        content: ``,
+    })
     const [userData, setUserData] = useState({
         name: '',
         lastName: '',
@@ -119,7 +156,19 @@ const Cart = (props) => {
         zip: ''
     })
     const [allowBuyingButton, setAllowBuyingButton] = useState(true)
-// Use this https://www.npmjs.com/package/invoice-number  INVOICE NUMBER
+    const [currentProduct, setCurrentProduct] = useState(0)
+    const changeBuyingQuantity = (value) => {
+        setCurrentProduct(value)
+
+    }
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+       setOpen(false);
+    };
 
     const buyCart = () => {
         console.log("BUY WHOLE CART")
@@ -139,6 +188,59 @@ const Cart = (props) => {
             [name]: value
         })
     }
+
+    const editThisProduct = (product) => {
+        handleOpen()
+        console.log('editThisProduct: ', product, props.cart)
+        // Dispatch EDIT_PRODUCT action
+        /*const remainingProducts = props.cart.filter(p => p.id_producto != product.id_producto)
+        props.deleteThisProduct(remainingProducts)
+        props.addThisProduct([{desc: "BETABEL",
+        id_producto: "2",
+        order: 111,
+        price: 26.5,
+        unidad: "KG"}])*/
+    }
+
+    const deleteThisProduct = (product) => {
+        console.log('deleteThisProduct: ', product)
+        const remainingProducts = props.cart.filter(p => p.id_producto != product.id_producto)
+        props.deleteThisProduct(remainingProducts)
+    }
+
+    const body = (
+        <div style={modalStyle} className={classesModal.paper}>
+            <h2 id="simple-modal-title">{modalContent.title}</h2>
+            <p id="simple-modal-description">
+                {modalContent.content}
+            </p>
+            {
+                modalContent.ok === true ?
+                    <>
+                    <button onClick={() => authPurchase()}>Si</button>
+                    <button onClick={() => nonAuthPurchase()}>No</button>   
+                    </>
+                    :
+                    <>
+                    <input type="text" value={currentProduct} onChange={(e) => changeBuyingQuantity(e.target.value)} />
+                    <button onClick={() => goToCart()}>OK {currentProduct}</button>
+                    </>
+            }
+            
+        </div>
+    );
+
+    const authPurchase = () => {
+
+    } 
+
+    const nonAuthPurchase = () => {
+        
+    } 
+
+    const goToCart = () => {
+        
+    } 
 
     useEffect(() => {
         const matrix = Object.entries(userData)
@@ -417,7 +519,7 @@ const Cart = (props) => {
               <TableCell align="right">{row.desc}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
               <TableCell align="right"><NumberFormat value={Number(row.price) * Number(row.order)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
-              <TableCell align="right"><Edit style={{cursor:'pointer'}} onClick={() => console.log('Click on Edit')}/><DeleteForever style={{cursor:'pointer'}} onClick={() => console.log('Click on Delete')}/></TableCell>
+              <TableCell align="right"><Edit style={{cursor:'pointer'}} onClick={() => editThisProduct(row)}/><DeleteForever style={{cursor:'pointer'}} onClick={() => deleteThisProduct(row)}/></TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -537,6 +639,14 @@ const Cart = (props) => {
         <p className="footer-company">All Rights Reserved. &copy; 2018 <a href="#">ThewayShop</a> Developed By :
             <a href="https://github.com/EdgarGGamartgo/">Edgar Martinez</a></p>
     </div>
+    <Modal
+            open={open}
+            onClose={() => handleClose()}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+        >
+                {body}
+        </Modal>
         </div>
     )
 }

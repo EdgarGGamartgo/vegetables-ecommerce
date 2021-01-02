@@ -1,4 +1,9 @@
-import { ADD_PRODUCT_TO_CART, EMPTY_TO_CART } from './cartTypes'
+import { 
+    ADD_PRODUCT_TO_CART,
+    EMPTY_TO_CART,
+    EDIT_PRODUCT,
+    DELETE_PRODUCT,
+ } from './cartTypes'
 
 const initialState = {
     products: []
@@ -16,6 +21,19 @@ const cartReducer = (state = initialState, action) => {
 
         case EMPTY_TO_CART: 
         
+        return {
+            ...state,
+            products: []
+        }
+
+        case DELETE_PRODUCT: 
+        
+        return {
+            ...state,
+            products: action.payload
+        }
+
+        case EDIT_PRODUCT: 
         return {
             ...state,
             products: []

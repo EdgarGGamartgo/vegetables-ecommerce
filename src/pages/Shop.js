@@ -31,6 +31,7 @@ function rand() {
   const useStyles = makeStyles((theme) => ({
     paper: {
       position: 'absolute',
+      justify: 'center',
       width: 400,
       backgroundColor: theme.palette.background.paper,
       border: '2px solid #000',
@@ -181,9 +182,11 @@ const Shop = (props) => {
 
     useEffect(() => {
         //sortedProducts, setSortedProducts
-        const products = props.cart.store.products.filter(e => e.nombre_producto.toLowerCase().includes(productFilter.toLowerCase()))
-        console.log('Getting real stuff: ', products)
-        setSortedProducts(products)
+        if (props && props.cart && props.cart.store && props.cart.store.products) {
+            const products = props.cart.store.products.filter(e => e.nombre_producto.toLowerCase().includes(productFilter.toLowerCase()))
+            console.log('Getting real stuff: ', products)
+            setSortedProducts(products)
+        }
         return () => {
             //cleanup
         }
