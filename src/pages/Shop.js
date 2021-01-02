@@ -81,7 +81,7 @@ const Shop = (props) => {
     // getModalStyle is not a pure function, we roll the style only on the first render
     const [modalStyle] = useState(getModalStyle);
     const [open, setOpen] = useState(false);
-
+    const [sortedProducts, setSortedProducts] = useState([]);
     const sortingGrid = (sortBy) => {
         console.log('sortBy: ', sortBy)
         setProductFilter(sortBy)
@@ -178,6 +178,16 @@ const Shop = (props) => {
             
         </div>
     );
+
+    useEffect(() => {
+        //sortedProducts, setSortedProducts
+        const products = props.cart.store.products.filter(e => e.nombre_producto.toLowerCase().includes(productFilter.toLowerCase()))
+        console.log('Getting real stuff: ', products)
+        setSortedProducts(products)
+        return () => {
+            //cleanup
+        }
+    }, [productFilter])
 
     useEffect(() => {
         (async() => {
@@ -392,7 +402,38 @@ const Shop = (props) => {
                                 <div role="tabpanel" className="tab-pane fade show active" id="grid-view">
                                     <div className="row">
 
-                                        {products ? products.map(product => 
+                                        {products && productFilter === '' ? products.map(product => 
+                                        
+                                        <div className="col-sm-6 col-md-6 col-lg-4 col-xl-4" key={product.id_producto}>
+                                            <div className="products-single fix">
+                                                <div className="box-img-hover">
+                                                    <div className="type-lb">
+                                                        <p className="sale">Venta</p>
+                                                        {/* <p className="sale">{product.nombre_producto}</p> */}
+                                                    </div>
+                                                    <img src={product.imagen} className="img-fluid" alt={product.nombre_producto}/>
+                                                    <div className="mask-icon" > 
+                                                         <ul>
+                                                        {/*
+                                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="View"><i className="fas fa-eye"></i></a></li>
+                                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Compare"><i className="fas fa-sync-alt"></i></a></li>
+                                                            <li><a href="#" data-toggle="tooltip" data-placement="right" title="Add to Wishlist"><i className="far fa-heart"></i></a></li>
+                                                        */}
+                                                            </ul> 
+                                                        <input type="text" placeholder={product.unidad} value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value, product.id_producto)} />
+                                                        <button onClick={() => deleteProduct(buyingQuantity, product.id_producto)} className="cart">Agregar a carrito</button>
+                                                    </div>
+                                                </div>
+                                                <div className="why-text">
+                                                    <h4>{product.nombre_producto}</h4>
+                                                    <h5> $ {product.costo} MXN/{product.unidad}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            
+                                        ) : null}
+
+                                {sortedProducts && productFilter !== '' ? sortedProducts.map(product => 
                                         
                                         <div className="col-sm-6 col-md-6 col-lg-4 col-xl-4" key={product.id_producto}>
                                             <div className="products-single fix">

@@ -69,7 +69,7 @@ const Header = (props) => {
                         <li className="nav-item active"><Link to='/' className="nav-link" data-toggle="dropdown">HOME</Link></li>
                         {/* <li className="nav-item"><a className="nav-link" href="about.html">About Us</a></li> */}
                         <li className="dropdown">
-                            <Link to='/shop' className="nav-link dropdown-toggle arrow" data-toggle="dropdown">SHOP</Link>
+                            <Link to='/shop' className="nav-link dropdown-toggle arrow" data-toggle="dropdown">COMPRAR</Link>
                             <ul className="dropdown-menu">
 								<li><a href="shop.html">Sidebar Shop</a></li>
 								<li><a href="shop-detail.html">Shop Detail</a></li>
@@ -92,7 +92,7 @@ const Header = (props) => {
                         <li className="side-menu">
 								<i className="fa fa-shopping-bag"></i>
 								<span className="badge">{cartItems}</span>
-								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">My Cart</Link></p>
+								<p><Link to='/cart' className="nav-link" data-toggle="dropdown">Mi carrito</Link></p>
 						</li>
                     </ul>
                 </div>

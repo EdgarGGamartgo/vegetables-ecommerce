@@ -6,7 +6,7 @@ import './../css/style-coche.css'
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import groupBy from 'lodash/groupBy'
-import { Modal } from '@material-ui/core';
+import { Modal, FormControl, Input, InputLabel, FormHelperText, Grid } from '@material-ui/core';
 import { Edit, DeleteForever } from '@material-ui/icons'
 import { connect } from 'react-redux'
 import { buyProduct, emptyCart } from '../redux'
@@ -75,6 +75,17 @@ const useStyles = makeStyles({
       minWidth: 650,
     },
   });
+
+  const useStylesGrid = makeStyles((theme) => ({
+    root: {
+      flexGrow: 1,
+    },
+    paper: {
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      color: theme.palette.text.secondary,
+    },
+  }));
   
   function createData(name, calories, fat, carbs, protein) {
     return { name, calories, fat, carbs, protein };
@@ -90,10 +101,24 @@ const useStyles = makeStyles({
 
 const Cart = (props) => {
     const classes = useStyles();
+    const classesGrid = useStylesGrid();
     const [axiosData, setAxiosData] = useState('')
     const [today, setToday] = useState(new Date().toLocaleDateString())
     const [cart, setCart] = useState([])
     const [folio, setFolio] = useState('')
+    const [userData, setUserData] = useState({
+        name: '',
+        lastName: '',
+        secondLastName: '',
+        phone: '',
+        email: '',
+        street: '',
+        town: '',
+        city: '',
+        state: '',
+        zip: ''
+    })
+    const [allowBuyingButton, setAllowBuyingButton] = useState(true)
 // Use this https://www.npmjs.com/package/invoice-number  INVOICE NUMBER
 
     const buyCart = () => {
@@ -102,8 +127,41 @@ const Cart = (props) => {
 
     const declineCart = () => {
         console.log("DECLINE WHOLE CART")
+        console.log("USER UPDATED DATA: ", userData)
         props.declineCart()
     } 
+
+    const changeUserForm = (event) => {
+        const value = event.value;
+        const name = event.name;
+        setUserData({
+            ...userData,
+            [name]: value
+        })
+    }
+
+    useEffect(() => {
+        const matrix = Object.entries(userData)
+        // const arrayObject = matrix.map(e => {
+        //     return {
+        //         [e[0]]: e[1]
+        //     }
+        // })
+        const falsyValues = matrix.filter(e => !e[1])
+        if (falsyValues.length > 0) {
+            setAllowBuyingButton(true)
+        } else {
+            setAllowBuyingButton(false)
+        }
+        // for (const keyProperty in userData) {
+        //     if (!keyProperty) {
+        //         setAllowBuyingButton(true)
+        //     }
+        // }
+        return () => {
+            //cleanup
+        }
+    }, [userData])
 
     useEffect(() => {
         (async () => {
@@ -126,7 +184,7 @@ const Cart = (props) => {
             setCart(props.cart)
         })()
 
-    }, [])
+    }, [props.cart])
 
     return (
         <div>
@@ -252,8 +310,90 @@ const Cart = (props) => {
                     <p>R.F.C: LIEM952566gjkdtr58</p>
                 </div>
                                                          
-            </div>    
-
+            </div>   
+            <br/>
+            <div className={classes.root}>
+      <Grid container spacing={3}>
+      <Grid item xs={12}>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input">Por favor, complete los siguientes campos para poder realizar su compra.</InputLabel>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input">Nombre (s)*</InputLabel>
+                <Input id="my-input" aria-describedby="my-helper-text" value={userData.name} name="name" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input2">Primer apellido*</InputLabel>
+                <Input id="my-input2" aria-describedby="my-helper-text2" value={userData.lastName} name="lastName" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text2"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input3">Segundo apellido*</InputLabel>
+                <Input id="my-input3" aria-describedby="my-helper-text3" value={userData.secondLastName} name="secondLastName" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text3"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input4">Email*</InputLabel>
+                <Input id="my-input4" aria-describedby="my-helper-text4" value={userData.email} name="email" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text4"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input5">Teléfono*</InputLabel>
+                <Input id="my-input5" aria-describedby="my-helper-text5" value={userData.phone} name="phone" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text5"></FormHelperText>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Grid container spacing={3}>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input6">Calle*</InputLabel>
+                <Input id="my-input6" aria-describedby="my-helper-text6" value={userData.street} name="street" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text6"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input7">Colonia*</InputLabel>
+                <Input id="my-input7" aria-describedby="my-helper-text7" value={userData.town} name="town" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text7"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input8">Ciudad/Municipio*</InputLabel>
+                <Input id="my-input8" aria-describedby="my-helper-text8" value={userData.city} name="city" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text8"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input9">C.P*</InputLabel>
+                <Input id="my-input9" aria-describedby="my-helper-text9" value={userData.zip} name="zip" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text9"></FormHelperText>
+          </Paper>
+        </Grid>
+        <Grid item xs>
+          <Paper className={classesGrid.paper}>
+          <InputLabel htmlFor="my-input10">Estado*</InputLabel>
+                <Input id="my-input10" aria-describedby="my-helper-text10" value={userData.state} name="state" onChange={(e) => changeUserForm(e.target)}/>
+                <FormHelperText id="my-helper-text10"></FormHelperText>
+          </Paper>
+        </Grid>
+      </Grid>
+    </div> 
+                    <br/>
             <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
@@ -292,7 +432,7 @@ const Cart = (props) => {
                                 
                 <p>
                      {/* <input type="text" id="amount" readOnly /> */}
-                     <button className="btn hvr-hover" type="submit" onClick={() => buyCart()}>Realizar compra</button>
+                     <button className="btn hvr-hover" type="submit" onClick={() => buyCart()} disabled={allowBuyingButton}>Realizar compra</button>
                      <button className="btn hvr-hover" type="submit" onClick={() => declineCart()}>Rechazar compra</button>
                 </p>
             </div>
