@@ -137,7 +137,9 @@ const Cart = (props) => {
     const [axiosData, setAxiosData] = useState('')
     const [today, setToday] = useState(new Date().toLocaleDateString())
     const [cart, setCart] = useState([])
+    const [boughtSuccess, setBoughtSuccess] = useState(false);
     const [open, setOpen] = useState(false);
+    const [openBoughtModal, setOpenBoughtModal] = useState(false);
     const [currentProductQuantity, setCurrentProductQuantity] = useState(1);
     const [folio, setFolio] = useState('')
     const [modalStyle] = useState(getModalStyle);
@@ -200,11 +202,20 @@ const Cart = (props) => {
                 importe_total
             }
         })
-        const response = await axios.post('http://localhost:3001/sale/create', {
-            products,
-            userData
-        })
-        console.log('This is a sales response: ', response.data)
+        try {
+            const response = await axios.post('http://localhost:3001/sale/create', {
+                products,
+                userData
+            })
+            setBoughtSuccess(true)
+            declineCart()
+            console.log('This is a sales response: ', response.data)
+            setOpenBoughtModal(true)
+        } catch (e) {
+            console.log("ERRORRCATCH: ",e, e.response)
+            setBoughtSuccess(false)
+            setOpenBoughtModal(true)
+        } 
     }
 
     const declineCart = () => {
@@ -233,6 +244,28 @@ const Cart = (props) => {
         const remainingProducts = props.cart.filter(p => p.id_producto != product.id_producto)
         props.deleteThisProduct(remainingProducts)
     }
+
+    const bodyBought = (
+        <div style={modalStyle} className={classesModal.paper}>
+            {boughtSuccess ? <h2 id="simple-modal-title">Orden exitosa</h2> : <h2 id="simple-modal-title">Error</h2>}
+            {boughtSuccess ? 
+            <>
+            <p id="simple-modal-description">
+            Su orden ha sido exitosa, en breve recibira su codigo de verificacion con el cual 
+            puede finalizar el proceso de compra con el repartidor. Gracias! 
+            </p>
+            <button onClick={() => setOpenBoughtModal(false)}>OK</button> 
+            </>
+            : 
+            <>
+            <p id="simple-modal-description">
+            Se ha generado un error al prcesar su orden. Intente mas tarde por favor. Gracias! 
+            </p>
+            <button onClick={() => setOpenBoughtModal(false)}>OK</button> 
+            </>
+            }
+        </div>
+    )
 
     const body = (
         <div style={modalStyle} className={classesModal.paper}>
@@ -570,10 +603,15 @@ const Cart = (props) => {
                 </p>
             </div>
 
-
+            {boughtSuccess
+            ?
             <div className="datos"> {/* <!-- Ticke Datos-> */}
-                Gracias por su compra
+                <Link to='/shop' className="nav-link dropdown-toggle arrow" data-toggle="dropdown">Gracias por su compra. Click aquí para realizar nueva compra.</Link>
             </div>
+            :
+            null
+            }
+            
 
 
         </div>
@@ -677,6 +715,15 @@ const Cart = (props) => {
             aria-describedby="simple-modal-description"
         >
                 {body}
+        </Modal>
+        {/* This is modal to check if buying proccess was correct or not */}
+        <Modal
+            open={openBoughtModal}
+            onClose={() => setOpenBoughtModal(false)}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+        >
+                {bodyBought}
         </Modal>
         </div>
     )
