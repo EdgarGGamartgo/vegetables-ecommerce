@@ -27,8 +27,8 @@ function rand() {
   }
   
   function getModalStyle() {
-    const top = 50 + rand();
-    const left = 50 + rand();
+    const top = 50;
+    const left = 50;
   
     return {
       top: `${top}%`,
@@ -121,6 +121,7 @@ const useStyles = makeStyles({
     paper: {
       position: 'absolute',
       justify: 'center',
+      left: '50%',
       width: 400,
       backgroundColor: theme.palette.background.paper,
       border: '2px solid #000',
@@ -137,6 +138,7 @@ const Cart = (props) => {
     const [today, setToday] = useState(new Date().toLocaleDateString())
     const [cart, setCart] = useState([])
     const [open, setOpen] = useState(false);
+    const [currentProductQuantity, setCurrentProductQuantity] = useState(1);
     const [folio, setFolio] = useState('')
     const [modalStyle] = useState(getModalStyle);
     const [modalContent, setModalContent] = useState({
@@ -158,11 +160,11 @@ const Cart = (props) => {
     const [allowBuyingButton, setAllowBuyingButton] = useState(true)
     const [currentProduct, setCurrentProduct] = useState(0)
     const changeBuyingQuantity = (value) => {
-        setCurrentProduct(value)
+        setCurrentProductQuantity(value)
 
     }
 
-    const handleOpen = () => {
+    const handleOpen = (product) => {
         setOpen(true);
     };
 
@@ -170,8 +172,39 @@ const Cart = (props) => {
        setOpen(false);
     };
 
-    const buyCart = () => {
-        console.log("BUY WHOLE CART")
+    const buyCart = async() => {
+        console.log("BUY WHOLE CART: ", props.cart)
+        let importe_total = 0
+        let products = props.cart.map(p => {
+            const {
+                id_producto,
+                order,
+                desc,
+                unidad,
+                price,
+             } = p
+             importe_total += Number(price) * Number(order) 
+            return {
+                id_producto,
+                order,
+                folio,
+                nombre_producto: desc,
+                unidad,
+                costo_unidad: price,
+                importe_producto: Number(price) * Number(order),
+            }
+        })
+        products = products.map(p => {
+            return {
+                ...p,
+                importe_total
+            }
+        })
+        const response = await axios.post('http://localhost:3001/sale/create', {
+            products,
+            userData
+        })
+        console.log('This is a sales response: ', response.data)
     }
 
     const declineCart = () => {
@@ -190,16 +223,9 @@ const Cart = (props) => {
     }
 
     const editThisProduct = (product) => {
-        handleOpen()
+        setCurrentProduct(product)
+        handleOpen(product)
         console.log('editThisProduct: ', product, props.cart)
-        // Dispatch EDIT_PRODUCT action
-        /*const remainingProducts = props.cart.filter(p => p.id_producto != product.id_producto)
-        props.deleteThisProduct(remainingProducts)
-        props.addThisProduct([{desc: "BETABEL",
-        id_producto: "2",
-        order: 111,
-        price: 26.5,
-        unidad: "KG"}])*/
     }
 
     const deleteThisProduct = (product) => {
@@ -222,8 +248,8 @@ const Cart = (props) => {
                     </>
                     :
                     <>
-                    <input type="text" value={currentProduct} onChange={(e) => changeBuyingQuantity(e.target.value)} />
-                    <button onClick={() => goToCart()}>OK {currentProduct}</button>
+                    <input type="text" value={currentProductQuantity} onChange={(e) => changeBuyingQuantity(e.target.value)} />
+                    <button onClick={() => goToCart()}>OK</button>
                     </>
             }
             
@@ -239,7 +265,12 @@ const Cart = (props) => {
     } 
 
     const goToCart = () => {
-        
+        // Dispatch EDIT_PRODUCT action
+        const remainingProducts = props.cart.filter(p => p.id_producto != currentProduct.id_producto)
+        props.deleteThisProduct(remainingProducts)
+        currentProduct.order = currentProductQuantity
+        props.addThisProduct([currentProduct])
+        handleClose()
     } 
 
     useEffect(() => {
