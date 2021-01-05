@@ -9,7 +9,7 @@ import './css/responsive.css';
 import './css/custom.css';
 import { Provider } from 'react-redux'
 import store from './redux/store'
-
+import Pedidos from './pages/Pedidos'
 import { persistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -76,4 +76,16 @@ const InventarioPage = () => {
 	)
 };
 
-export {Homepage, ShopPage, ContactPage, CartPage, InventarioPage } ;
+const PedidosPage = () => {
+	return (
+		<Provider store={store}>
+			<PersistGate loading={null} persistor={persistor}>
+		<div>
+				<Pedidos/>
+		</div>
+			</PersistGate>
+		</Provider>
+	)
+};
+
+export {Homepage, ShopPage, ContactPage, CartPage, InventarioPage, PedidosPage } ;

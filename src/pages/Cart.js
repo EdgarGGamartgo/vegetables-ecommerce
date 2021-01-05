@@ -161,6 +161,7 @@ const Cart = (props) => {
     })
     const [allowBuyingButton, setAllowBuyingButton] = useState(true)
     const [currentProduct, setCurrentProduct] = useState(0)
+    const [errorMsgModal, setErrorMsgModal] = useState('')
     const changeBuyingQuantity = (value) => {
         setCurrentProductQuantity(value)
 
@@ -175,6 +176,7 @@ const Cart = (props) => {
     };
 
     const buyCart = async() => {
+        setAllowBuyingButton(true)
         console.log("BUY WHOLE CART: ", props.cart)
         let importe_total = 0
         let products = props.cart.map(p => {
@@ -209,10 +211,20 @@ const Cart = (props) => {
             })
             setBoughtSuccess(true)
             declineCart()
+            setAllowBuyingButton(false)
             console.log('This is a sales response: ', response.data)
             setOpenBoughtModal(true)
         } catch (e) {
-            console.log("ERRORRCATCH: ",e, e.response)
+            setAllowBuyingButton(false)
+            console.log("ERROR POR FALTA EN INVENTARIO: ",e, e.response)
+            const { msg, order, unidad, nombre_producto } = e.response.data.error
+            if (msg && order && unidad && nombre_producto) {
+                console.log("e.response: ", e.response)
+                setErrorMsgModal(msg)
+            } else {
+                console.log("e.response II: ", e.response)
+                setErrorMsgModal('Se ha generado un error al prcesar su orden. Intente mas tarde por favor. Gracias!')
+            }
             setBoughtSuccess(false)
             setOpenBoughtModal(true)
         } 
@@ -252,14 +264,14 @@ const Cart = (props) => {
             <>
             <p id="simple-modal-description">
             Su orden ha sido exitosa, en breve recibira su codigo de verificacion con el cual 
-            puede finalizar el proceso de compra con el repartidor. Gracias! 
+            puede finalizar el proceso de compra con el repartidor. Gracias por su preferencia! 
             </p>
             <button onClick={() => setOpenBoughtModal(false)}>OK</button> 
             </>
             : 
             <>
             <p id="simple-modal-description">
-            Se ha generado un error al prcesar su orden. Intente mas tarde por favor. Gracias! 
+                {errorMsgModal}
             </p>
             <button onClick={() => setOpenBoughtModal(false)}>OK</button> 
             </>
@@ -313,12 +325,22 @@ const Cart = (props) => {
         //         [e[0]]: e[1]
         //     }
         // })
-        const falsyValues = matrix.filter(e => !e[1])
-        if (falsyValues.length > 0) {
-            setAllowBuyingButton(true)
-        } else {
+        if (userData.name !== '' &&
+            userData.lastName !== '' &&
+            userData.secondLastName !== '' &&
+            userData.phone !== '' &&
+            userData.town !== '' &&
+            userData.street !== '') {
             setAllowBuyingButton(false)
+            } else {
+            setAllowBuyingButton(true)
         }
+        // const falsyValues = matrix.filter(e => !e[1])
+        // if (falsyValues.length > 0) {
+        //     setAllowBuyingButton(true)
+        // } else {
+        //     setAllowBuyingButton(false)
+        // }
         // for (const keyProperty in userData) {
         //     if (!keyProperty) {
         //         setAllowBuyingButton(true)
@@ -331,6 +353,7 @@ const Cart = (props) => {
 
     useEffect(() => {
         (async () => {
+            console.log("Products disabled: ",props.cart)
             //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
             //const placeHolder = await axios.get('http://52.7.127.131:3001/status')
             //const placeHolder = await axios.get('http://localhost:3001/status')
@@ -508,7 +531,7 @@ const Cart = (props) => {
         </Grid>
         <Grid item xs>
           <Paper className={classesGrid.paper}>
-          <InputLabel htmlFor="my-input4">Email*</InputLabel>
+          <InputLabel htmlFor="my-input4">Email</InputLabel>
                 <Input id="my-input4" aria-describedby="my-helper-text4" value={userData.email} name="email" onChange={(e) => changeUserForm(e.target)}/>
                 <FormHelperText id="my-helper-text4"></FormHelperText>
           </Paper>
@@ -538,21 +561,21 @@ const Cart = (props) => {
         </Grid>
         <Grid item xs>
           <Paper className={classesGrid.paper}>
-          <InputLabel htmlFor="my-input8">Ciudad/Municipio*</InputLabel>
+          <InputLabel htmlFor="my-input8">Ciudad/Municipio</InputLabel>
                 <Input id="my-input8" aria-describedby="my-helper-text8" value={userData.city} name="city" onChange={(e) => changeUserForm(e.target)}/>
                 <FormHelperText id="my-helper-text8"></FormHelperText>
           </Paper>
         </Grid>
         <Grid item xs>
           <Paper className={classesGrid.paper}>
-          <InputLabel htmlFor="my-input9">C.P*</InputLabel>
+          <InputLabel htmlFor="my-input9">C.P</InputLabel>
                 <Input id="my-input9" aria-describedby="my-helper-text9" value={userData.zip} name="zip" onChange={(e) => changeUserForm(e.target)}/>
                 <FormHelperText id="my-helper-text9"></FormHelperText>
           </Paper>
         </Grid>
         <Grid item xs>
           <Paper className={classesGrid.paper}>
-          <InputLabel htmlFor="my-input10">Estado*</InputLabel>
+          <InputLabel htmlFor="my-input10">Estado</InputLabel>
                 <Input id="my-input10" aria-describedby="my-helper-text10" value={userData.state} name="state" onChange={(e) => changeUserForm(e.target)}/>
                 <FormHelperText id="my-helper-text10"></FormHelperText>
           </Paper>
@@ -598,7 +621,7 @@ const Cart = (props) => {
                                 
                 <p>
                      {/* <input type="text" id="amount" readOnly /> */}
-                     <button className="btn hvr-hover" type="submit" onClick={() => buyCart()} disabled={allowBuyingButton}>Realizar compra</button>
+                     <button className="btn hvr-hover" type="submit" onClick={() => buyCart()} disabled={allowBuyingButton || props.cart.length == 0}>Realizar compra</button>
                      <button className="btn hvr-hover" type="submit" onClick={() => declineCart()}>Rechazar compra</button>
                 </p>
             </div>
