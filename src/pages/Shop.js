@@ -117,10 +117,15 @@ const Shop = (props) => {
         //setProducts(updatedStore)
         props.setProductToCart([{
             id_producto: currentProduct.id_producto,
+            clave_producto: currentProduct.clave_producto, 
             order: Number(quantitySet),
             unidad: currentProduct.unidad,
             desc: currentProduct.nombre_producto,
-            price: currentProduct.costo
+            price: currentProduct.costo,
+            venta_menudeo: currentProduct.venta_menudeo,
+            venta_mayoreo: currentProduct.venta_mayoreo,
+            importe_menudeo: currentProduct.importe_menudeo,
+            importe_mayoreo: currentProduct.importe_mayoreo,
         }])
         setOpen(false)
         //props.buyItem(quantitySet)
@@ -232,7 +237,11 @@ const Shop = (props) => {
                     order: Number(quantityProduct),
                     unidad: currentProduct[0].unidad,
                     desc: currentProduct[0].nombre_producto,
-                    price: currentProduct[0].costo
+                    price: currentProduct[0].costo,
+                    venta_menudeo: currentProduct[0].venta_menudeo,
+                    venta_mayoreo: currentProduct[0].venta_mayoreo,
+                    importe_menudeo: currentProduct[0].importe_menudeo,
+                    importe_mayoreo: currentProduct[0].importe_mayoreo,
                 }])
                 setModalContent({
                     title: 'Exito',

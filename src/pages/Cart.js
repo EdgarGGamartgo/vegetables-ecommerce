@@ -48,12 +48,17 @@ const groupingData = (cart) => {
                       for (const element of groupC[`${property}`]) {
                           inQuantity = inQuantity + Number(element.order)                    
                      }
+                     console.log('groupC[`${property}`][0]: ', groupC[`${property}`][0])
                       finalCart.push({
                          id_producto:  property,
                          order: inQuantity,
                          unidad: groupC[`${property}`][0].unidad,
                          desc: groupC[`${property}`][0].desc,
-                         price: groupC[`${property}`][0].price
+                         price: groupC[`${property}`][0].price,
+                         venta_menudeo: groupC[`${property}`][0].venta_menudeo,
+                         venta_mayoreo: groupC[`${property}`][0].venta_mayoreo,
+                         importe_menudeo: groupC[`${property}`][0].importe_menudeo,
+                         importe_mayoreo: groupC[`${property}`][0].importe_mayoreo,
                       })
                  }
          console.log('Grouped cart: ', finalCart)
@@ -66,7 +71,7 @@ const mapStateToProps = (state, ownProps) => {
     //   : state.product.productKg
 
     const currentCart = groupingData(state.cart.products)    
-
+    console.log('currentCart Deb: ', currentCart)
     return {
         item: 0, //itemState
         cart: currentCart
@@ -165,6 +170,22 @@ const Cart = (props) => {
     const changeBuyingQuantity = (value) => {
         setCurrentProductQuantity(value)
 
+    }
+
+    const calculatePrice = (product) => {
+        // NUEVOS CLIENTES
+
+        if(Number(product.order) <= Number(product.venta_menudeo)){
+
+            return Number(product.order) * Number(product.importe_menudeo);
+
+        }
+
+        if(Number(product.order) > Number(product.venta_mayoreo)){
+
+            return Number(product.order) * Number(product.importe_mayoreo);
+
+        }
     }
 
     const handleOpen = (product) => {
@@ -605,7 +626,7 @@ const Cart = (props) => {
               <TableCell align="right">{row.unidad}</TableCell>
               <TableCell align="right">{row.desc}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right"><NumberFormat value={Number(row.price) * Number(row.order)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+              <TableCell align="right"><NumberFormat value={calculatePrice(row)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
               <TableCell align="right"><Edit style={{cursor:'pointer'}} onClick={() => editThisProduct(row)}/><DeleteForever style={{cursor:'pointer'}} onClick={() => deleteThisProduct(row)}/></TableCell>
             </TableRow>
           ))}
