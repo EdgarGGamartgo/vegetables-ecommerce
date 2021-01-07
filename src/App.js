@@ -10,6 +10,8 @@ import './css/custom.css';
 import { Provider } from 'react-redux'
 import store from './redux/store'
 import Pedidos from './pages/Pedidos'
+import MyContext from './pages/MyContext'
+
 import { persistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -88,4 +90,12 @@ const PedidosPage = () => {
 	)
 };
 
-export {Homepage, ShopPage, ContactPage, CartPage, InventarioPage, PedidosPage } ;
+const ContextPage = () => {
+	return (
+		<div>
+				<MyContext/>
+		</div>
+	)
+};
+
+export {ContextPage, Homepage, ShopPage, ContactPage, CartPage, InventarioPage, PedidosPage } ;
