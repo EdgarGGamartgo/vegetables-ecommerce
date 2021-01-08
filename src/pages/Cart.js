@@ -21,6 +21,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import NumberFormat from 'react-number-format'
 import Header from './../components/Header'
+import { formatDecimals } from '../utils/formatDecimals';
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -167,9 +168,11 @@ const Cart = (props) => {
     const [allowBuyingButton, setAllowBuyingButton] = useState(true)
     const [currentProduct, setCurrentProduct] = useState(0)
     const [errorMsgModal, setErrorMsgModal] = useState('')
-    const changeBuyingQuantity = (value) => {
-        setCurrentProductQuantity(value)
-
+    const changeBuyingQuantity = (quantity) => {
+        if(quantity.includes('.')) {
+            quantity = formatDecimals(quantity)
+        }
+        setCurrentProductQuantity(quantity)
     }
 
     const calculatePrice = (product) => {

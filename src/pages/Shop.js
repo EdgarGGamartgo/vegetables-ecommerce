@@ -2,17 +2,34 @@ import './../css/bootstrap.min.css';
 import './../css/style.css';
 import './../css/responsive.css';
 import './../css/custom.css';
-import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import { Store } from './../assets/Store'
 import { makeStyles } from '@material-ui/core/styles';
-import { Modal } from '@material-ui/core';
-import groupBy from 'lodash/groupBy'
+import { Modal, Typography } from '@material-ui/core';
 import { connect } from 'react-redux'
 import { buyProduct, settingStore, addProductCart } from '../redux'
 import axios from 'axios'
 import Header from './../components/Header'
-  
+import { withStyles } from "@material-ui/core/styles";
+import { formatDecimals } from '../utils/formatDecimals';
+
+const WhiteTextTypography = withStyles({
+  root: {
+    color: "#FFFFFF",
+    fontWeight: 'bold'
+  }
+})(Typography);
+
+
+const useStylesWarning = makeStyles((theme) => ({
+    paper: {
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[1],
+      padding: theme.spacing(2, 4, 3),
+    },
+  }));
+
   function getModalStyle() {
     const top = 50;
     const left = 50;
@@ -61,7 +78,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 }  
 
 const Shop = (props) => {
-
     const [products, setProducts] = useState(props.item.store.products)
     const [buyingQuantity, setBuyingQuantity] = useState(0)
     const [currentProduct, setCurrentProduct] = useState({
@@ -83,7 +99,7 @@ const Shop = (props) => {
         console.log('sortBy: ', sortBy)
         setProductFilter(sortBy)
     }
-
+    const [showWarningMsg, setShowWarningMsg] = useState(false)
     const goToCart = () => {
         setOpen(false)
         console.log('Cart is : ', cart)
@@ -281,12 +297,24 @@ const Shop = (props) => {
     }
 
     const changeBuyingQuitity = (quantity, id) => {
+        
         // Set product id and buying quantity to Redux Store tp set Cart items
         console.log('This is my current store: ', props.item)
+        if(quantity.includes('.')) {
+            quantity = formatDecimals(quantity)
+        }
+        //const fixedNumber = Number(quantity).toFixed(2)
         setBuyingQuantity(quantity)
+        const warningMsg = Number.isInteger(Number(quantity))
+        console.log('warningMsg: ', quantity, warningMsg, showWarningMsg)
+        if (warningMsg) {
+            setShowWarningMsg(true)
+        } else {
+            setShowWarningMsg(false)
+        }
         // const addedProduct = props.item.store.products.filter(product => {
         //     return product.id_producto === id
-        // })
+        // })setShowWarningMsg
         // console.log('Current product: ', addedProduct)
         // props.setProductToCart(addedProduct[0])
         
@@ -429,7 +457,17 @@ const Shop = (props) => {
                                                         */}
                                                             </ul> 
                                                         <input type="text" placeholder={product.unidad} value={buyingQuantity} onChange={(e) => changeBuyingQuitity(e.target.value, product.id_producto)} />
-                                                        <button onClick={() => deleteProduct(buyingQuantity, product.id_producto)} className="cart">Agregar a carrito</button>
+                                                        {
+                                                            (!showWarningMsg && product.unidad.toLowerCase() !== 'kg') 
+                                                            ?
+                                                            <>
+                                                            <WhiteTextTypography variant="h6">
+                                                                  Este producto solo se vende por {product.unidad}
+                                                            </WhiteTextTypography>
+                                                            </> 
+                                                            : null
+                                                        }
+                                                        <button onClick={() => deleteProduct(buyingQuantity, product.id_producto)} className="cart" disabled={(!showWarningMsg && product.unidad.toLowerCase() !== 'kg')}>Agregar a carrito</button>
                                                     </div>
                                                 </div>
                                                 <div className="why-text">
