@@ -4,7 +4,7 @@ import axios from 'axios'
 import CsvDownload from 'react-json-to-csv'
 import { Modal } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-
+import FileSaver from 'file-saver';
 
 function getModalStyle() {
     const top = 50;
@@ -138,12 +138,35 @@ const Inventario = () => {
         openModal()
     }
 
+    const downloadInvoice = async() => {
+        try {
+            const file = await axios.get('http://localhost:3001/api/download/invoice', {
+                responseType: 'arraybuffer',
+                headers: {
+                    Accept: 'application/pdf',
+                },
+              });
+
+            if (file.data) {
+                FileSaver.saveAs(
+                    new Blob([file.data], { type: 'application/pdf' }),
+                    `sample.pdf`
+                );
+            }
+            console.log('Successfully retrieved file')
+            //window.open(file.data, '_blank');
+
+        } catch(e) {
+            console.log('Error retrieving invoice pdf')
+        }
+    }
+
     return (
         <div>
             <input type="file" onChange={(e) => loadFile(e.target.files[0])}/>
             <button onClick={() => initModal()}>Cargar inventario</button>
             <CsvDownload data={mockData} filename='Inventario.csv'>Descarga inventario</CsvDownload>
-        
+            {/* <button onClick={() => downloadInvoice()}>Descargar invoice</button> */}
             <Modal
             open={modal}
             onClose={() => handleModal()}

@@ -22,6 +22,7 @@ import Paper from '@material-ui/core/Paper';
 import NumberFormat from 'react-number-format'
 import Header from './../components/Header'
 import { formatDecimals } from '../utils/formatDecimals';
+import FileSaver from 'file-saver';
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -153,6 +154,7 @@ const Cart = (props) => {
         title: 'Modifique la cantidad a comprar',
         content: ``,
     })
+    const [warningMsg, setWarningMsg] = useState(false)
     const [userData, setUserData] = useState({
         name: '',
         lastName: '',
@@ -179,13 +181,13 @@ const Cart = (props) => {
         // NUEVOS CLIENTES
 
         if(Number(product.order) <= Number(product.venta_menudeo)){
-
+            console.log("MADE: ", Number(product.order) * Number(product.importe_menudeo))
             return Number(product.order) * Number(product.importe_menudeo);
 
         }
 
         if(Number(product.order) > Number(product.venta_mayoreo)){
-
+            console.log("ASHIRA: ", Number(product.order) * Number(product.importe_menudeo))
             return Number(product.order) * Number(product.importe_mayoreo);
 
         }
@@ -233,6 +235,21 @@ const Cart = (props) => {
                 products,
                 userData
             })
+            const file = await axios.get('http://localhost:3001/api/download/invoice', {
+                responseType: 'arraybuffer',
+                headers: {
+                    Accept: 'application/pdf',
+                },
+              });
+
+            if (file.data) {
+                FileSaver.saveAs(
+                    new Blob([file.data], { type: 'application/pdf' }),
+                    `pedido_aceptado.pdf`
+                );
+            }
+            console.log('Successfully retrieved file')
+            //window.open(file.data, '_blank');
             setBoughtSuccess(true)
             declineCart()
             setAllowBuyingButton(false)
@@ -269,10 +286,26 @@ const Cart = (props) => {
         })
     }
 
+    useEffect(() => {
+        console.log('KAWAIIDESUNE!: ', currentProduct)
+        let mounted = true
+        if(mounted && currentProduct.order) {
+            if(currentProductQuantity.toString().includes('.') && currentProduct.unidad.toLowerCase() !== 'kg') {
+                setWarningMsg(true)
+            } else {
+                setWarningMsg(false)
+            }
+        }
+        return () => {
+            return mounted = false
+        } 
+    }, [currentProductQuantity])
+
     const editThisProduct = (product) => {
-        setCurrentProduct(product)
-        handleOpen(product)
         console.log('editThisProduct: ', product, props.cart)
+        setCurrentProduct(product)
+        setCurrentProductQuantity(1)
+        handleOpen(product)
     }
 
     const deleteThisProduct = (product) => {
@@ -318,7 +351,12 @@ const Cart = (props) => {
                     :
                     <>
                     <input type="text" value={currentProductQuantity} onChange={(e) => changeBuyingQuantity(e.target.value)} />
-                    <button onClick={() => goToCart()}>OK</button>
+                    <button onClick={() => goToCart()} disabled={warningMsg}>OK</button>
+                    {
+                        warningMsg 
+                        ? <p>Este producto solo se vende por PZA</p>
+                        : null
+                    }
                     </>
             }
             
@@ -629,7 +667,16 @@ const Cart = (props) => {
               <TableCell align="right">{row.unidad}</TableCell>
               <TableCell align="right">{row.desc}</TableCell>
               <TableCell align="right">{row.price}</TableCell>
-              <TableCell align="right"><NumberFormat value={calculatePrice(row)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+              {
+                  (Number(row.order) <= Number(row.venta_menudeo))
+                  ? <TableCell align="right"><NumberFormat value={Number(row.order) * Number(row.importe_menudeo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+                  : null
+              }
+              {
+                  (Number(row.order) >= Number(row.venta_mayoreo))
+                  ? <TableCell align="right"><NumberFormat value={Number(row.order) * Number(row.importe_mayoreo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+                  : null
+              }
               <TableCell align="right"><Edit style={{cursor:'pointer'}} onClick={() => editThisProduct(row)}/><DeleteForever style={{cursor:'pointer'}} onClick={() => deleteThisProduct(row)}/></TableCell>
             </TableRow>
           ))}
