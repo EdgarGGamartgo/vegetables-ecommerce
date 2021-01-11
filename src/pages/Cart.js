@@ -235,7 +235,11 @@ const Cart = (props) => {
                 products,
                 userData
             })
-            const file = await axios.get('http://localhost:3001/api/download/invoice', {
+            const file = await axios.post('http://localhost:3001/api/download/invoice',
+            {
+                products,
+                userData
+            },{
                 responseType: 'arraybuffer',
                 headers: {
                     Accept: 'application/pdf',
