@@ -231,10 +231,7 @@ const Cart = (props) => {
             }
         })
         try {
-            const response = await axios.post('http://localhost:3001/sale/create', {
-                products,
-                userData
-            })
+            
             const file = await axios.post('http://localhost:3001/api/download/invoice',
             {
                 products,
@@ -245,6 +242,11 @@ const Cart = (props) => {
                     Accept: 'application/pdf',
                 },
               });
+
+            const response = await axios.post('http://localhost:3001/sale/create', {
+                products,
+                userData
+            })
 
             if (file.data) {
                 FileSaver.saveAs(
