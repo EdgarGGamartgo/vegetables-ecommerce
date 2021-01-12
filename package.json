@@ -35,7 +35,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pub": "git add . && git commit -m \"Updates\" && git push && git status"
   },
   "eslintConfig": {
     "extends": [
