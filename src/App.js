@@ -11,7 +11,7 @@ import { Provider } from 'react-redux'
 import store from './redux/store'
 import Pedidos from './pages/Pedidos'
 import MyContext from './pages/MyContext'
-
+import { Verification } from './pages/Verification'
 import { persistor } from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
 
@@ -98,4 +98,12 @@ const ContextPage = () => {
 	)
 };
 
-export {ContextPage, Homepage, ShopPage, ContactPage, CartPage, InventarioPage, PedidosPage } ;
+const VerificationPage = () => {
+	return (
+		<div>
+				<Verification/>
+		</div>
+	)
+};
+
+export {VerificationPage, ContextPage, Homepage, ShopPage, ContactPage, CartPage, InventarioPage, PedidosPage } ;
