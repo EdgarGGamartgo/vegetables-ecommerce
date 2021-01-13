@@ -23,6 +23,7 @@ import NumberFormat from 'react-number-format'
 import Header from './../components/Header'
 import { formatDecimals } from '../utils/formatDecimals';
 import FileSaver from 'file-saver';
+import { formatDate } from './../utils/formatDate'
 
 function rand() {
     return Math.round(Math.random() * 20) - 10;
@@ -544,7 +545,7 @@ const Cart = (props) => {
                         </div>
 
                         <div className="left">              
-                            <p>Fecha: {today}</p>
+                            <p>Fecha: {formatDate(today)}</p>
                         </div>            
                     </div>                
             </div>
