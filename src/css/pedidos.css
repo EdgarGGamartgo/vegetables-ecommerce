@@ -1,0 +1,93 @@
+.App {
+  height:100%;
+  width: 100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+/*
+
+.menu{
+  clear: both;
+  font-size: 20px;
+  text-align: center;
+  background: url(./Resorces/Image/Frutas3.jpg);
+  background-position: top center ;
+  background-repeat: no-repeat;
+  background-size: cover;
+}*/
+
+
+
+.imagfond{
+  height:100%;
+  width: 100%;
+  background: url('/public/images/frutas4.jpg') center center/cover no-repeat;
+  background-position: top center ;
+  background-repeat: no-repeat;
+  /*background-size: cover; *//*que pasa cuando se ve en un celular **el fondo que sucede con el */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  z-index: -1;
+  
+  
+}
+
+.dark-overlay{
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  padding-top: 0px;
+  padding-bottom: 10% ; 
+  
+}
+
+
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.miright{
+  float: left;
+}
+
+.App-header {
+ /* position: fixed;*/
+  width: 100%;
+  background-color: #282c34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.miclass{
+  border:10px;
+}
+
+.mibordwhite{
+  height: 100px;
+}
+
+

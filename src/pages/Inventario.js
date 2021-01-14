@@ -43,7 +43,8 @@ const Inventario = () => {
         ok: true
     })
     const [password, setPassword] = useState('')
-    
+    const [mockMinData, setMockMinData] = useState([])
+
     const openModal = () => {
         handleModal(true)
     }
@@ -115,12 +116,15 @@ const Inventario = () => {
             }
           })
     }
-
+    
     useEffect(() => {
         (async() => {
             const inventarioJson = await axios.get('http://localhost:3001/products')
             console.log('inventarioJson: ', inventarioJson.data)
             setMockData(inventarioJson.data.products)
+            const inventarioMinJson = await axios.get('http://localhost:3001/minimums/products')
+            console.log('inventarioMinJson: ', inventarioMinJson.data)
+            setMockMinData(inventarioMinJson.data)
         })()
     }, [])
 
@@ -166,6 +170,7 @@ const Inventario = () => {
             <input type="file" onChange={(e) => loadFile(e.target.files[0])}/>
             <button onClick={() => initModal()}>Cargar inventario</button>
             <CsvDownload data={mockData} filename='Inventario.csv'>Descarga inventario</CsvDownload>
+            <CsvDownload data={mockMinData} filename='InventarioMinimo.csv'>Descarga inventario mínimo</CsvDownload>
             {/* <button onClick={() => downloadInvoice()}>Descargar invoice</button> */}
             <Modal
             open={modal}

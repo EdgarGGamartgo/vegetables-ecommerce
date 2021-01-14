@@ -1,0 +1,63 @@
+.Card-Main{
+    width: 250px;
+    padding: 20px;
+}
+
+.header0{
+  text-align:left;
+  background-color: #9e9e9e;
+  color: white;
+  height: 35px;
+  padding:10px;
+}
+
+.Card-header{
+    background-color: rgb(255, 255, 255);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    padding:10px;
+  }
+
+  .Card-conten{
+  
+    background-color: #eeeeee;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    padding:10px;
+  }
+
+  .Card-pie{
+    background-color:#9e9e9e;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 60px;/*30px*/
+    padding: 10px;
+  }
+
+  .mpright{
+    float:right;
+    
+  }
+
+  .mpleft{
+    float: left;
+    
+  }
+
+  .textbut{
+    text-align:center;
+    font-size: 150px;
+  }
+
+  .tambuttom{
+    width: 50%;
+  }
+ 
+
+
