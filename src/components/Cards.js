@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
+import { Modal, Button} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import RemoveRedEyeIcon from '@material-ui/icons/RemoveRedEye';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -13,6 +13,17 @@ import Switch from '@material-ui/core/Switch';
 
 import './../css/styles-card.css';
 import { notas } from './../assets/notas.js'; 
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+      top: `${top}%`,
+      left: `${left}%`,
+      transform: `translate(-${top}%, -${left}%)`,
+  };
+}
 
 const Green = withStyles({
     switchBase: {
@@ -50,12 +61,50 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const useStylesModal = makeStyles((theme) => ({
+  paper: {
+      position: 'absolute',
+      justify: 'center',
+      left: '50%',
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[1],
+      padding: theme.spacing(2, 4, 3),
+  },
+}));
+
 export const SpacingGrid = () => {
+
+
+
   const classes = useStyles();
+  const [modalStyle] = useState(getModalStyle);
+  const classesModal = useStylesModal();
   
   const [valueSW, setValueSW] = useState(false); 
+  const [open, setOpen] = useState(false); 
   const [currentCard, setCurrentCard] = useState('')
   const [componentNotes, setComponentNotes] = useState([])
+
+  const body = (
+    <div style={modalStyle} className={classesModal.paper}>
+        <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2>
+        <p id="simple-modal-description">
+            HOLA SOY UNA MODAL
+        </p>
+        <button type="button" onClick={() => handleClose()}>OK</button>
+    </div>
+  );
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleOpen = (nota) => {
+    console.log('nota: ', nota)
+    setOpen(true)
+  }
 
   const handleSwitch = (check, folio) => {
     console.log('folio: ', folio)
@@ -118,6 +167,10 @@ export const SpacingGrid = () => {
     setComponentNotes(notas)  
   }, [])
 
+  const handleOrderModal = (nota) => {
+
+  }
+
   const renderedNotes = (notes) => {
     return (
       <>
@@ -144,6 +197,7 @@ export const SpacingGrid = () => {
                       <div className="Card-conten" >
                         <div className="tambuttom">
                                 <Button
+                                  onClick={() => handleOpen(nota)}
                                   variant="contained"
                                   color="primary"
                                   className={classes.button}
@@ -197,6 +251,14 @@ export const SpacingGrid = () => {
           }
         </Grid>
       </Grid>
+      <Modal
+            open={open}
+            onClose={() => handleClose()}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+            >
+                {body}
+            </Modal> 
     </Grid>
   );
 }

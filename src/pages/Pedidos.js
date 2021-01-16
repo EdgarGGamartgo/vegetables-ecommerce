@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Modal } from '@material-ui/core';
 import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
 import { addProductCart } from '../redux'
 import '../css/pedidos.css'
 import { SpacingGrid } from '../components/Cards'
+import { Input, InputAdornment, Button, Modal } from '@material-ui/core'
+import Search from '@material-ui/icons/Search';
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -45,12 +46,14 @@ const Pedidos = () => {
     const classesModal = useStylesModal();
     const [open, setOpen] = useState(false)
     const [modalStyle] = useState(getModalStyle);
+    const [folio, setFolio] = useState('')
 
     useEffect(() => {
+        console.log('folio: ', folio)
         return () => {
             console.log('Clean from Pedidos')
         }
-    }, [])
+    }, [folio])
 
     const handleClose = () => {
         setOpen(false)
@@ -70,6 +73,19 @@ const Pedidos = () => {
         </div>
     );
 
+    const handleOrder = (folio) => {
+        setFolio(folio)
+    }
+
+    const showOrder = () => {
+        console.log('showOrder folio: ', folio)
+    }
+    
+    const showAllOrders = () => {
+        console.log('showAllOrders: ', folio)
+    }
+
+    
     return (
         <div>
             <div >
@@ -82,6 +98,26 @@ const Pedidos = () => {
                 <div className="imagfond">
                     <div className="dark-overlay">
                         <div className="mibordwhite">
+                            <Input
+                                    value={folio}
+                                    onChange={(e) => handleOrder(e.target.value)}
+                                    placeholder="Folio del pedido"
+                                    style={{ backgroundColor: 'white', marginLeft: '55px', marginTop: '15px' }}
+                                    id="input-with-icon-adornment"
+                                    startAdornment={
+                                    <InputAdornment position="start">
+                                        <Search />
+                                    </InputAdornment>
+                                    }
+                            />
+                            <Button style=
+                            {{ backgroundColor: 'white', marginLeft: '5px', marginBottom: '16px', height: '30px'}}
+                            onClick={() => showOrder()}
+                            >Buscar pedido</Button>
+                            <Button style=
+                            {{ backgroundColor: 'white', marginLeft: '5px', marginBottom: '16px', height: '30px'}}
+                            onClick={() => showAllOrders()}
+                            >Mostrar todos los pedidos eliminados</Button>
                         </div>
                         <SpacingGrid />
                     </div>
@@ -97,6 +133,7 @@ const Pedidos = () => {
             >
                 {body}
             </Modal> */}
+ 
         </div>
     )
 }
