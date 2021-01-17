@@ -7,6 +7,13 @@ import '../css/pedidos.css'
 import { SpacingGrid } from '../components/Cards'
 import { Input, InputAdornment, Button, Modal } from '@material-ui/core'
 import Search from '@material-ui/icons/Search';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 
 const mapStateToProps = (state, ownProps) => {
     return {
@@ -42,12 +49,20 @@ function getModalStyle() {
     };
 }
 
+const useStyles = makeStyles({
+    table: {
+      minWidth: 650,
+    },
+  });
+
 const Pedidos = () => {
+    const classes = useStyles();
     const classesModal = useStylesModal();
     const [open, setOpen] = useState(false)
     const [modalStyle] = useState(getModalStyle);
     const [folio, setFolio] = useState('')
-
+    const [isSales, setIsSales] = useState(false)
+    
     useEffect(() => {
         console.log('folio: ', folio)
         return () => {
@@ -85,6 +100,10 @@ const Pedidos = () => {
         console.log('showAllOrders: ', folio)
     }
 
+    const showAllSales = () => {
+        console.log('showAllSales: ', isSales)
+        setIsSales(!isSales)
+    }
     
     return (
         <div>
@@ -102,7 +121,7 @@ const Pedidos = () => {
                                     value={folio}
                                     onChange={(e) => handleOrder(e.target.value)}
                                     placeholder="Folio del pedido"
-                                    style={{ backgroundColor: 'white', marginLeft: '55px', marginTop: '15px' }}
+                                    style={{ backgroundColor: 'white', marginLeft: '90px', marginTop: '15px' }}
                                     id="input-with-icon-adornment"
                                     startAdornment={
                                     <InputAdornment position="start">
@@ -118,22 +137,46 @@ const Pedidos = () => {
                             {{ backgroundColor: 'white', marginLeft: '5px', marginBottom: '16px', height: '30px'}}
                             onClick={() => showAllOrders()}
                             >Mostrar todos los pedidos eliminados</Button>
+                            <Button style=
+                            {{ backgroundColor: 'white', marginLeft: '5px', marginBottom: '16px', height: '30px'}}
+                            onClick={() => showAllSales()}
+                            >{ isSales ? 'Mostrar tarjetas de pedidos' : 'Mostrar tabla de ventas' }</Button>
                         </div>
-                        <SpacingGrid />
+                        {
+                           isSales ? 
+                           <div className="shop-box-inner">
+                                <div className="container">
+                                <>
+                                    <TableContainer component={Paper}>
+                                    <Table className={classes.table} aria-label="simple table">
+                                        <TableHead>
+                                        <TableRow>
+                                            <TableCell>Cantidad</TableCell>
+                                            <TableCell align="right">U.M</TableCell>
+                                            <TableCell align="right">Descripcion</TableCell>
+                                            <TableCell align="right">P.U.</TableCell>
+                                            <TableCell align="right">Importe</TableCell>
+                                            <TableCell align="right">Opciones</TableCell>
+                                        </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                        {/* Here Goes Some Content */}
+                                        </TableBody>
+                                    </Table>
+                                    </TableContainer><br/>
+                                    <Button style=
+                                                {{ backgroundColor: 'white' }}
+                                                onClick={() => showAllSales()}
+                                    >Regresar</Button>
+                                    </>                 
+                            </div>
+                            </div>
+
+                        : <SpacingGrid />
+                        }
                     </div>
                 </div>
             </div>
-            {/* HOLA SOY PEDIDOS!
-            <button type="button" onClick={() => handleOpen()}>Open Modal</button>
-            <Modal
-            open={open}
-            onClose={() => handleClose()}
-            aria-labelledby="simple-modal-title"
-            aria-describedby="simple-modal-description"
-            >
-                {body}
-            </Modal> */}
- 
         </div>
     )
 }
