@@ -10,7 +10,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { lightGreen } from '@material-ui/core/colors';
 import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
-
+import axios from 'axios'
 import './../css/styles-card.css';
 import { notas } from './../assets/notas.js'; 
 
@@ -127,7 +127,7 @@ export const SpacingGrid = () => {
     // setValueSW(event);
   }
 
-  const showNote = (visible, folio) => {
+  const showNote = async (visible, folio) => {
     console.log('folio: ', folio)
     console.log('visible before: ', componentNotes)
     const notes = componentNotes.map(note => {
@@ -140,6 +140,10 @@ export const SpacingGrid = () => {
       return {
         ...note
       }
+    })
+    await axios.post('http://localhost:3001/update/sale', {
+      folio,
+      visible
     })
     setComponentNotes(notes)
     console.log('visible after: ', componentNotes)
@@ -164,7 +168,40 @@ export const SpacingGrid = () => {
   }, [componentNotes])
 
   useEffect(() => {
-    setComponentNotes(notas)  
+    (async () => {
+      try {
+          const sales = await axios.get('http://localhost:3001/sales/user')
+          console.log('Retrieving SalesByUser: ', sales.data)
+          const salesUser = sales.data.map(e => {
+            return {
+              "folio": e.folio,
+              "cliente": `${e.usuario.nombre} ${e.usuario.apellido_paterno} ${e.usuario.apellido_materno}`,
+              "direccion": `${e.usuario.calle}, ${e.usuario.colonia}`,
+              "articulos": "",
+              "descripcion" : "",
+              "prioridad": "",
+              "isChecked": false,
+              isVisible: e.isVisible
+            }
+          })
+          /*
+        {
+            "folio": "001",
+            "cliente": "Conchita",
+            "direccion": "Villamar 1 calle laguna azul",
+            "articulos": " 10.00 kg Jitomate $25.00 $250.00",
+            "descripcion" : "Lorem impsum ",
+            "prioridad": "bajo",
+            "isChecked": false,
+            isVisible: true
+        },
+          */
+         console.log('DEBUG :',salesUser)
+          setComponentNotes(salesUser) //notas  
+      } catch(e) {
+          console.log('Error when retrieving SalesByUser')
+      }
+  })()
   }, [])
 
   const handleOrderModal = (nota) => {

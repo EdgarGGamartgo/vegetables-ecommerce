@@ -62,7 +62,7 @@ const Pedidos = () => {
     const [modalStyle] = useState(getModalStyle);
     const [folio, setFolio] = useState('')
     const [isSales, setIsSales] = useState(false)
-    
+
     useEffect(() => {
         console.log('folio: ', folio)
         return () => {
