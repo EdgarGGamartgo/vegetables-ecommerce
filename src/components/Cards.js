@@ -12,7 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import axios from 'axios'
 import './../css/styles-card.css';
-import { notas } from './../assets/notas.js'; 
+import _ from 'lodash'
 
 function getModalStyle() {
   const top = 50;
@@ -141,10 +141,14 @@ export const SpacingGrid = () => {
         ...note
       }
     })
-    await axios.post('http://localhost:3001/update/sale', {
-      folio,
-      visible
-    })
+    try {
+      await axios.put('http://localhost:3001/update/sale', {
+        folio,
+        visible
+      })
+    } catch (e) {
+      console.log('Error when retrieving updated sales!')
+    }
     setComponentNotes(notes)
     console.log('visible after: ', componentNotes)
 
@@ -172,18 +176,33 @@ export const SpacingGrid = () => {
       try {
           const sales = await axios.get('http://localhost:3001/sales/user')
           console.log('Retrieving SalesByUser: ', sales.data)
-          const salesUser = sales.data.map(e => {
+          const rawSales = _.chain(sales.data)
+          // Group the elements of Array based on `color` property
+          .groupBy("folio")
+          // `key` is group's name (color), `value` is the array of objects
+          .map((value, key) => ({ folio: key, sales: value }))
+          .value()
+
+          const salesUser = rawSales.map(e => {
             return {
               "folio": e.folio,
-              "cliente": `${e.usuario.nombre} ${e.usuario.apellido_paterno} ${e.usuario.apellido_materno}`,
-              "direccion": `${e.usuario.calle}, ${e.usuario.colonia}`,
+              "cliente": `${e.sales[0].usuario.nombre} ${e.sales[0].usuario.apellido_paterno} ${e.sales[0].usuario.apellido_materno}`,
+              "direccion": `${e.sales[0].usuario.calle}, ${e.sales[0].usuario.colonia}`,
               "articulos": "",
               "descripcion" : "",
               "prioridad": "",
               "isChecked": false,
-              isVisible: e.isVisible
+              isVisible: e.sales[0].isVisible
             }
           })
+          console.log('.groupBy("Folio"): ',
+            _.chain(salesUser)
+              // Group the elements of Array based on `color` property
+              .groupBy("folio")
+              // `key` is group's name (color), `value` is the array of objects
+              .map((value, key) => ({ folio: key, sales: value }))
+              .value()
+          );
           /*
         {
             "folio": "001",
