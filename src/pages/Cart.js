@@ -213,8 +213,19 @@ const Cart = (props) => {
                 desc,
                 unidad,
                 price,
+                importe_mayoreo,
+                importe_menudeo,
+                venta_mayoreo,
+                venta_menudeo
              } = p
-             importe_total += Number(price) * Number(order) 
+             let realPrice = 0
+             if (order >= venta_mayoreo ) {
+                realPrice = importe_mayoreo
+             }
+             if (order <= venta_menudeo ) {
+                realPrice = importe_menudeo
+             }
+             importe_total += Number(realPrice) * Number(order) 
             return {
                 id_producto,
                 order,
@@ -222,7 +233,7 @@ const Cart = (props) => {
                 nombre_producto: desc,
                 unidad,
                 costo_unidad: price,
-                importe_producto: Number(price) * Number(order),
+                importe_producto: Number(realPrice) * Number(order),
             }
         })
         products = products.map(p => {
@@ -673,7 +684,16 @@ const Cart = (props) => {
               </TableCell>
               <TableCell align="right">{row.unidad}</TableCell>
               <TableCell align="right">{row.desc}</TableCell>
-              <TableCell align="right">{row.price}</TableCell>
+              {
+                  (Number(row.order) <= Number(row.venta_menudeo))
+                  ? <TableCell align="right"><NumberFormat value={Number(row.importe_menudeo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+                  : null
+              }
+              {
+                  (Number(row.order) >= Number(row.venta_mayoreo))
+                  ? <TableCell align="right"><NumberFormat value={Number(row.importe_mayoreo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
+                  : null
+              }
               {
                   (Number(row.order) <= Number(row.venta_menudeo))
                   ? <TableCell align="right"><NumberFormat value={Number(row.order) * Number(row.importe_menudeo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>

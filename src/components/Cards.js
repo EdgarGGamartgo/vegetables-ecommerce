@@ -13,6 +13,7 @@ import Switch from '@material-ui/core/Switch';
 import axios from 'axios'
 import './../css/styles-card.css';
 import _ from 'lodash'
+import { ProductsTable } from './ProductsTable'
 
 function getModalStyle() {
   const top = 50;
@@ -66,7 +67,7 @@ const useStylesModal = makeStyles((theme) => ({
       position: 'absolute',
       justify: 'center',
       left: '50%',
-      width: 400,
+      width: 1000,
       backgroundColor: theme.palette.background.paper,
       border: '2px solid #000',
       boxShadow: theme.shadows[1],
@@ -84,15 +85,13 @@ export const SpacingGrid = () => {
   
   const [valueSW, setValueSW] = useState(false); 
   const [open, setOpen] = useState(false); 
-  const [currentCard, setCurrentCard] = useState('')
   const [componentNotes, setComponentNotes] = useState([])
+  const [currentCard, setCurrentCard] = useState({})
 
   const body = (
     <div style={modalStyle} className={classesModal.paper}>
-        <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2>
-        <p id="simple-modal-description">
-            HOLA SOY UNA MODAL
-        </p>
+        <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2><br/>
+          <ProductsTable data={currentCard.articulos} /><br/>
         <button type="button" onClick={() => handleClose()}>OK</button>
     </div>
   );
@@ -103,6 +102,7 @@ export const SpacingGrid = () => {
 
   const handleOpen = (nota) => {
     console.log('nota: ', nota)
+    setCurrentCard(nota)
     setOpen(true)
   }
 
@@ -188,7 +188,7 @@ export const SpacingGrid = () => {
               "folio": e.folio,
               "cliente": `${e.sales[0].usuario.nombre} ${e.sales[0].usuario.apellido_paterno} ${e.sales[0].usuario.apellido_materno}`,
               "direccion": `${e.sales[0].usuario.calle}, ${e.sales[0].usuario.colonia}`,
-              "articulos": "",
+              "articulos": e.sales,
               "descripcion" : "",
               "prioridad": "",
               "isChecked": false,
