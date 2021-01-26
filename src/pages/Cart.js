@@ -276,8 +276,14 @@ const Cart = (props) => {
         } catch (e) {
             setAllowBuyingButton(false)
             console.log("ERROR POR FALTA EN INVENTARIO: ",e, e.response)
-            const { msg, order, unidad, nombre_producto } = e.response.data.error
-            if (msg && order && unidad && nombre_producto) {
+            let msg
+            if (e.response.data.error) {
+                msg  = e.response.data.error.msg
+            }
+            if (e.response.data.msg) {
+                msg  = e.response.data.msg
+            }
+            if (msg) {
                 console.log("e.response: ", e.response)
                 setErrorMsgModal(msg)
             } else {

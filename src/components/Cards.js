@@ -92,9 +92,14 @@ export const SpacingGrid = () => {
     <div style={modalStyle} className={classesModal.paper}>
         <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2><br/>
           <ProductsTable data={currentCard.articulos} /><br/>
-        <button type="button" onClick={() => handleClose()}>OK</button>
+        <button onClick={() => confirmChanges()}>CONFIRMAR CAMBIOS</button>
+        <button style={{ marginLeft: '10px' }} type="button" onClick={() => handleClose()}>CANCELAR</button>
     </div>
   );
+
+  const confirmChanges = () => {
+    console.log('confirmChanges: ')
+  }
 
   const handleClose = () => {
     setOpen(false)
