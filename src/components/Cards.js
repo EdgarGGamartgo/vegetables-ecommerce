@@ -14,6 +14,7 @@ import axios from 'axios'
 import './../css/styles-card.css';
 import _ from 'lodash'
 import { ProductsTable } from './ProductsTable'
+import { DropDownMenu } from './DropdownMenu'
 
 function getModalStyle() {
   const top = 50;
@@ -75,6 +76,10 @@ const useStylesModal = makeStyles((theme) => ({
   },
 }));
 
+const handleAdd = () => {
+  console.log('currentCard.articulos: ') //, currentCard.articulos
+}
+
 export const SpacingGrid = () => {
 
 
@@ -88,12 +93,20 @@ export const SpacingGrid = () => {
   const [componentNotes, setComponentNotes] = useState([])
   const [currentCard, setCurrentCard] = useState({})
 
+  const buttonStyle = {
+    alignSelf: 'center'
+  }
+
   const body = (
     <div style={modalStyle} className={classesModal.paper}>
         <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2><br/>
           <ProductsTable data={currentCard.articulos} /><br/>
-        <button onClick={() => confirmChanges()}>CONFIRMAR CAMBIOS</button>
-        <button style={{ marginLeft: '10px' }} type="button" onClick={() => handleClose()}>CANCELAR</button>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <Button variant="outlined" onClick={() => confirmChanges()}>CONFIRMAR CAMBIOS</Button>
+          <Button variant="outlined" onClick={() => handleClose()}>CANCELAR</Button>
+          <Button variant="outlined" onClick={() => handleAdd()}>AGREGAR</Button>
+          <DropDownMenu style={buttonStyle} />
+        </div>
     </div>
   );
 

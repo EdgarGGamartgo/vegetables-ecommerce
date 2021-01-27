@@ -238,10 +238,8 @@ export const ProductsTable = (props) => {
                                     : null
                                 }
                                 
-                                {/* {
-                                    (Number(row.order) <= Number(row.venta_menudeo))
-                                        ? <TableCell align="right"><NumberFormat value={Number(row.order) * Number(row.importe_menudeo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
-                                        : null
+                                {/* {lse }).then(result => {
+    app.listen(port, () =>
                                 }
                                 {
                                     (Number(row.order) >= Number(row.venta_mayoreo))
