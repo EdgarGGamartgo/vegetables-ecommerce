@@ -76,9 +76,7 @@ const useStylesModal = makeStyles((theme) => ({
   },
 }));
 
-const handleAdd = () => {
-  console.log('currentCard.articulos: ') //, currentCard.articulos
-}
+
 
 export const SpacingGrid = () => {
 
@@ -92,20 +90,47 @@ export const SpacingGrid = () => {
   const [open, setOpen] = useState(false); 
   const [componentNotes, setComponentNotes] = useState([])
   const [currentCard, setCurrentCard] = useState({})
+  const [allProducts, setAllProducts] = useState([])
 
   const buttonStyle = {
     alignSelf: 'center'
   }
 
+  const handleAdd = () => {
+    console.log('currentCard.articulos: ') //, currentCard.articulos
+    handleClose()
+    setTimeout(() => {
+      handleOpen(currentCard)
+    }, 1)
+  }
+  
+  const handleChildrenProduct = (childProduct) => {
+    if (childProduct) {
+      let currentProductsCard = currentCard
+      currentProductsCard.articulos.push({
+        cantidad: 1,
+        folio: '',
+        importe_producto: childProduct.importe_menudeo,
+        importe_total: 0,
+        isVisible: true,
+        nombre_producto: childProduct.nombre_producto,
+        unidad: childProduct.unidad,
+      })
+      currentProductsCard.nande = '1'
+      setCurrentCard(currentProductsCard)
+      console.log('OMOIDAKEDO: ', childProduct, currentCard)
+    }
+  }
+
   const body = (
     <div style={modalStyle} className={classesModal.paper}>
         <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2><br/>
-          <ProductsTable data={currentCard.articulos} /><br/>
+          <ProductsTable data={currentCard.articulos}  /><br/> 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <Button variant="outlined" onClick={() => confirmChanges()}>CONFIRMAR CAMBIOS</Button>
           <Button variant="outlined" onClick={() => handleClose()}>CANCELAR</Button>
           <Button variant="outlined" onClick={() => handleAdd()}>AGREGAR</Button>
-          <DropDownMenu style={buttonStyle} />
+          <DropDownMenu style={buttonStyle} data={allProducts} childrenProduct={handleChildrenProduct}/>
         </div>
     </div>
   );
@@ -141,8 +166,6 @@ export const SpacingGrid = () => {
     setComponentNotes(notes)
     console.log('componentNotes after: ', componentNotes)
 
-    // setCurrentCard(folio)
-    // setValueSW(event);
   }
 
   const showNote = async (visible, folio) => {
@@ -170,8 +193,7 @@ export const SpacingGrid = () => {
     setComponentNotes(notes)
     console.log('visible after: ', componentNotes)
 
-    // setCurrentCard(folio)
-    // setValueSW(event);
+
   }
 
   const deleteNote = (note) => {
@@ -186,6 +208,10 @@ export const SpacingGrid = () => {
   }
 
   useEffect(() => {
+    console.log('currentCardS: ', currentCard)
+  }, [currentCard])
+
+  useEffect(() => {
     console.log('componentNotes to update: ', componentNotes)
   }, [componentNotes])
 
@@ -193,6 +219,8 @@ export const SpacingGrid = () => {
     (async () => {
       try {
           const sales = await axios.get('http://localhost:3001/sales/user')
+          const allProduits = await axios.get('http://localhost:3001/products')
+          setAllProducts(allProduits.data)
           console.log('Retrieving SalesByUser: ', sales.data)
           const rawSales = _.chain(sales.data)
           // Group the elements of Array based on `color` property

@@ -89,11 +89,6 @@ export const ProductsTable = (props) => {
         }
         setInitialCost(true)
         setDataTable(tableRows) 
-        // Dispatch EDIT_PRODUCT action
-        // const remainingProducts = props.cart.filter(p => p.id_producto != currentProduct.id_producto)
-        // props.deleteThisProduct(remainingProducts)
-        // currentProduct.order = currentProductQuantity
-        // props.addThisProduct([currentProduct])
         handleClose()
     }
     const handleOpen = (product) => {
@@ -162,6 +157,10 @@ export const ProductsTable = (props) => {
         //     cleanup
         // }
     }, [])
+
+    useEffect(() => {
+        console.log('Change props from Products Tabvle: ', props)
+    }, [props.data])
 
     const editThisProduct = (param) => {
         console.log('editThisProduct: ', param)
@@ -246,7 +245,7 @@ export const ProductsTable = (props) => {
                                         ? <TableCell align="right"><NumberFormat value={Number(row.order) * Number(row.importe_mayoreo)} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} /> MXN</TableCell>
                                         : null
                                 } */}
-                                <TableCell align="right"><Edit style={{ cursor: 'pointer' }} onClick={() => editThisProduct(row)} /></TableCell>
+                                <TableCell align="right"><Edit style={{ cursor: 'pointer' }} onClick={() => editThisProduct(row)} /><DeleteForever style={{cursor:'pointer'}} onClick={() => deleteThisProduct(row)}/></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

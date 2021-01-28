@@ -2,15 +2,37 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useState, useEffect } from 'react'
 
-export const DropDownMenu = () => {
+export const DropDownMenu = ({ data, childrenProduct }) => {
+
+  const [products, setProducts] = useState([])
+  const [currentProduct, setCurrentProduct] = useState({})
+
+  useEffect(() => {
+    console.log('data: ', data)
+    
+    if (data.products.length > 0) {
+      setProducts(data.products)
+    }
+    // return () => {
+    //   cleanup
+    // }
+  }, [])
+
+  const selectedProduct = (event, value) => {
+    setCurrentProduct(value)
+    childrenProduct(value)
+  }
+
   return (
     <Autocomplete
+      onChange={(event, value) => selectedProduct(event, value) }
       id="combo-box-demo"
-      options={top100Films}
-      getOptionLabel={(option) => option.title}
+      options={products}
+      getOptionLabel={(option) => option.nombre_producto}
       style={{ width: 300 }}
-      renderInput={(params) => <TextField {...params} label="Selecciona producto" variant="outlined" />}
+      renderInput={(params) => <TextField  {...params} label="Selecciona producto" variant="outlined" />}
     />
   );
 }
