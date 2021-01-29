@@ -11,7 +11,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Edit, DeleteForever } from '@material-ui/icons'
 import NumberFormat from 'react-number-format'
 import { formatDecimals } from '../utils/formatDecimals';
+import { connect } from 'react-redux'
 
+const mapStateToProps = (state, ownProps) => {
+    console.log('Listening to Card events: ', state.card.products)
+    return {
+        card: state.card.products
+    }
+}
 const useStyles = makeStyles({
     table: {
         minWidth: 650,
@@ -39,7 +46,7 @@ const useStylesModal = makeStyles((theme) => ({
         padding: theme.spacing(2, 4, 3),
     },
 }));
-export const ProductsTable = (props) => {
+const ProductsTable = (props) => {
     const [modalStyle] = useState(getModalStyle);
     const classesModal = useStylesModal();
     const [dataTable, setDataTable] = useState([])
@@ -60,6 +67,20 @@ export const ProductsTable = (props) => {
         setCurrentProductQuantity(quantity)
     }
     const [currentProduct, setCurrentProduct] = useState(0)
+
+    useEffect(() => {
+        if (props.card > 0) {
+            (async () => {
+                console.log('Listener Products Table Updated Card: ', props.card)
+                console.log('New Table Updated Card: ', dataTable)
+                try {
+                    await axios.put(`http://localhost:3001/update/sale/${dataTable[0].folio}`, { products: dataTable })
+                } catch (e) {
+                    console.log('Error when updatin Card Products: ', e)
+                }
+            })()
+        }
+    }, [props])
 
     useEffect(() => {
         console.log('KAWAIIDESUNE!: ', currentProduct)
@@ -170,6 +191,8 @@ export const ProductsTable = (props) => {
 
     const deleteThisProduct = (param) => {
         console.log('deleteThisProduct: ', param)
+        const newProducts = dataTable.filter(e => e.nombre_producto !== param.nombre_producto)
+        setDataTable(newProducts)
     }
 
     const getProductByName = async () => {
@@ -262,3 +285,5 @@ export const ProductsTable = (props) => {
         </>
     )
 }
+
+export default connect(mapStateToProps)(ProductsTable)

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
 import { addProductCart } from '../redux'
 import '../css/pedidos.css'
-import { SpacingGrid } from '../components/Cards'
+import SpacingGrid from '../components/Cards'
 import { Input, InputAdornment, Button, Modal } from '@material-ui/core'
 import Search from '@material-ui/icons/Search';
 import Table from '@material-ui/core/Table';

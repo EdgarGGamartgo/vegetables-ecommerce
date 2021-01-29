@@ -13,8 +13,23 @@ import Switch from '@material-ui/core/Switch';
 import axios from 'axios'
 import './../css/styles-card.css';
 import _ from 'lodash'
-import { ProductsTable } from './ProductsTable'
+import ProductsTable from './ProductsTable'
 import { DropDownMenu } from './DropdownMenu'
+import { connect } from 'react-redux'
+import { updateCardProducts } from '../redux'
+
+const mapStateToProps = (state, ownProps) => {
+  console.log('REDUX FROM CARDS COMPONENT: ')
+  return {
+      item: 0, //itemState
+  }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+      updateCardProducts: (products) => dispatch(updateCardProducts(products)),
+  }
+}
 
 function getModalStyle() {
   const top = 50;
@@ -78,7 +93,7 @@ const useStylesModal = makeStyles((theme) => ({
 
 
 
-export const SpacingGrid = () => {
+const SpacingGrid = (props) => {
 
 
 
@@ -136,7 +151,8 @@ export const SpacingGrid = () => {
   );
 
   const confirmChanges = () => {
-    console.log('confirmChanges: ')
+    console.log('confirmChanges: ', currentCard)
+    props.updateCardProducts(1)
   }
 
   const handleClose = () => {
@@ -365,3 +381,4 @@ export const SpacingGrid = () => {
   );
 }
 
+export default connect(mapStateToProps, mapDispatchToProps)(SpacingGrid)
