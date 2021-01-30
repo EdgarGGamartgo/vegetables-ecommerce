@@ -122,9 +122,13 @@ const SpacingGrid = (props) => {
   const handleChildrenProduct = (childProduct) => {
     if (childProduct) {
       let currentProductsCard = currentCard
+      console.log('allProducts[0].usuario.id_usuario" ', currentProductsCard)
       currentProductsCard.articulos.push({
+        usuario: {
+          id_usuario: currentProductsCard.articulos[0].usuario.id_usuario
+        },
         cantidad: 1,
-        folio: '',
+        folio: currentProductsCard.articulos[0].folio,
         importe_producto: childProduct.importe_menudeo,
         importe_total: 0,
         isVisible: true,

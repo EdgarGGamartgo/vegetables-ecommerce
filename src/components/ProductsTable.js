@@ -69,12 +69,42 @@ const ProductsTable = (props) => {
     const [currentProduct, setCurrentProduct] = useState(0)
 
     useEffect(() => {
-        if (props.card > 0) {
+        if (props.card > 0 && dataTable.length > 0) {
             (async () => {
                 console.log('Listener Products Table Updated Card: ', props.card)
                 console.log('New Table Updated Card: ', dataTable)
+                const userId = dataTable[0].usuario.id_usuario
+                let importe_total = 0
+                const sanitizedDataTable = dataTable.map(product => {
+                    let importe_producto = 0
+                    if (Number(product.cantidad) <= Number(product.venta_menudeo)) {
+                        importe_producto = Number((Number(product.importe_menudeo) * Number(product.cantidad)).toFixed(2))
+                    }
+
+                    if (Number(product.cantidad) >= Number(product.venta_mayoreo)) {
+                        importe_producto = Number((Number(product.importe_mayoreo) * Number(product.cantidad)).toFixed(2))
+                    }
+                    importe_total += importe_producto
+                    return {
+                            folio: dataTable[0].folio,
+                            codigo_compra: dataTable[0].folio,
+                            nombre_producto: product.nombre_producto,
+                            cantidad: product.cantidad,
+                            unidad: product.unidad,
+                            costo_unidad: null,
+                            importe_producto,
+                            importe_total: 0,
+                            estatus: 'PENDIENTE', // VALIDADA, RECHAZADA, PENDIENTE
+                            isVisible: true,
+                            usuarioIdUsuario: userId
+                    }
+                })
+                for (const product of sanitizedDataTable) {
+                    product.importe_total = Number(importe_total.toFixed(2))
+                }
+                
                 try {
-                    await axios.put(`http://localhost:3001/update/sale/${dataTable[0].folio}`, { products: dataTable })
+                    await axios.put(`http://localhost:3001/update/sale/${dataTable[0].folio}`, { products: sanitizedDataTable })
                 } catch (e) {
                     console.log('Error when updatin Card Products: ', e)
                 }
