@@ -5,6 +5,8 @@ export { emptyCart } from './cart/cartActions'
 export { editProduct } from './cart/cartActions'
 export { deleteProduct } from './cart/cartActions'
 export { updateCardProducts } from './card/cardActions'
+export { downloadCardProducts } from './card/cardActions'
+
 
 
 

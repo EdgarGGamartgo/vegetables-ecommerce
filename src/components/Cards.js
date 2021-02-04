@@ -17,6 +17,8 @@ import ProductsTable from './ProductsTable'
 import { DropDownMenu } from './DropdownMenu'
 import { connect } from 'react-redux'
 import { updateCardProducts } from '../redux'
+import { downloadCardProducts } from '../redux'
+
 
 const mapStateToProps = (state, ownProps) => {
   console.log('REDUX FROM CARDS COMPONENT: ')
@@ -28,6 +30,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
       updateCardProducts: (products) => dispatch(updateCardProducts(products)),
+      downloadCardProducts: (downloads) => dispatch(downloadCardProducts(downloads)),
   }
 }
 
@@ -141,15 +144,26 @@ const SpacingGrid = (props) => {
     }
   }
 
+  const handleDisable = (childProduct) => {
+    console.log('ITOSHI: ', childProduct)
+    setEnableDownload(childProduct)
+  }
+
+  const downloadOrder = () => {
+    props.downloadCardProducts(1)
+  }
+  const [enableDownload, setEnableDownload] = useState(true)
+
   const body = (
     <div style={modalStyle} className={classesModal.paper}>
         <h2 id="simple-modal-title">DETALLE DE PEDIDO</h2><br/>
-          <ProductsTable data={currentCard.articulos}  /><br/> 
+          <ProductsTable data={currentCard.articulos} user={currentCard} reEnable={handleDisable} enableDownload={enableDownload} /><br/> 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <Button variant="outlined" onClick={() => confirmChanges()}>CONFIRMAR CAMBIOS</Button>
           <Button variant="outlined" onClick={() => handleClose()}>CANCELAR</Button>
           <Button variant="outlined" onClick={() => handleAdd()}>AGREGAR</Button>
           <DropDownMenu style={buttonStyle} data={allProducts} childrenProduct={handleChildrenProduct}/>
+          <Button variant="outlined" onClick={() => downloadOrder()} disabled={enableDownload}>DESCARGAR PEDIDO</Button>
         </div>
     </div>
   );
@@ -157,6 +171,7 @@ const SpacingGrid = (props) => {
   const confirmChanges = () => {
     console.log('confirmChanges: ', currentCard)
     props.updateCardProducts(1)
+    setEnableDownload(!enableDownload)
   }
 
   const handleClose = () => {

@@ -12,11 +12,14 @@ import { Edit, DeleteForever } from '@material-ui/icons'
 import NumberFormat from 'react-number-format'
 import { formatDecimals } from '../utils/formatDecimals';
 import { connect } from 'react-redux'
+import FileSaver from 'file-saver';
+
 
 const mapStateToProps = (state, ownProps) => {
     console.log('Listening to Card events: ', state.card.products)
     return {
-        card: state.card.products
+        card: state.card.products,
+        downloads: state.card.downloads,
     }
 }
 const useStyles = makeStyles({
@@ -67,6 +70,68 @@ const ProductsTable = (props) => {
         setCurrentProductQuantity(quantity)
     }
     const [currentProduct, setCurrentProduct] = useState(0)
+    
+    useEffect(() => {
+        (async () => {
+            try {
+                console.log('downloads: ', props.downloads, dataTable, props.user)
+                const products = dataTable.map(e => {
+                    let costo_unidad = 1
+                    if (Number(e.cantidad) <= Number(e.venta_menudeo)) {
+                        costo_unidad = Number(e.importe_menudeo).toFixed(2)
+                    }
+
+                    if (Number(e.cantidad) >= Number(e.venta_mayoreo)) {
+                        costo_unidad = Number(e.importe_mayoreo).toFixed(2)
+                    }
+                    return {
+                        costo_unidad,
+                        folio: e.folio,
+                        importe_producto: e.importe_producto,
+                        importe_total: e.importe_total,
+                        nombre_producto: e.nombre_producto,
+                        order: e.cantidad,
+                        unidad: e.unidad,
+                    }
+                })
+                const userData = {
+                    city: "",
+                    email: "",
+                    lastName: "",
+                    name: props.user.cliente,
+                    phone: "",
+                    secondLastName: "",
+                    state: "",
+                    street: props.user.direccion,
+                    town: "",
+                    zip: "",
+                }
+                const file = await axios.post('http://localhost:3001/api/download/invoice',
+                {
+                    products,
+                    userData
+                },{
+                    responseType: 'arraybuffer',
+                    headers: {
+                        Accept: 'application/pdf',
+                    },
+                  });
+                // const response = await axios.post('http://localhost:3001/sale/create', {
+                //     products,
+                //     userData
+                // })
+                if (file.data) {
+                    FileSaver.saveAs(
+                        new Blob([file.data], { type: 'application/pdf' }),
+                        `pedido_aceptado.pdf`
+                    );
+                }
+                props.reEnable(!props.enableDownload)
+            } catch (e) {
+                console.log("ERROR WHEN DOWNLOADING PDF: ",e, e.response)
+            }
+        })()
+    }, [props.downloads])
 
     useEffect(() => {
         if (props.card > 0 && dataTable.length > 0) {
@@ -110,7 +175,7 @@ const ProductsTable = (props) => {
                 }
             })()
         }
-    }, [props])
+    }, [props.products])
 
     useEffect(() => {
         console.log('KAWAIIDESUNE!: ', currentProduct)

@@ -439,17 +439,11 @@ const Cart = (props) => {
 
     useEffect(() => {
         (async () => {
-            console.log("Products disabled: ",props.cart)
             //const placeHolder = await axios.get('http://ec2-100-26-193-244.compute-1.amazonaws.com:3001/status')
             //const placeHolder = await axios.get('http://52.7.127.131:3001/status')
             //const placeHolder = await axios.get('http://localhost:3001/status')
             //const placeHolder = await axios.get('http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
             const placeHolder = await axios.get('https://cors-everywhere-me.herokuapp.com/http://ec2-3-84-38-249.compute-1.amazonaws.com:3001/status')
-            const invoice = await axios.get('http://localhost:3001/invoice')
-            const guard = invoice && invoice.data && invoice.data.invoice
-            if (guard) {
-                setFolio(invoice.data.invoice)
-            }
             /*
             You can use cors everywhere proxy. It is hosted as https and is a proxy so you just need to add it before your api end point url.
             This will do the trick. I'm personally using this for the same setup you mentioned.
@@ -460,6 +454,17 @@ const Cart = (props) => {
         })()
 
     }, [props.cart])
+
+    useEffect(() => {
+        (async () => {
+            const invoice = await axios.get('http://localhost:3001/invoice')
+            const guard = invoice && invoice.data && invoice.data.invoice
+            console.log("Products disabled: ",invoice)
+            if (guard) {
+                setFolio(invoice.data.invoice)
+            }
+        })()
+    }, [])
 
     return (
         <div>
