@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
-import { addProductCart } from '../redux'
+import { addProductCart, filterCards } from '../redux'
 import '../css/pedidos.css'
 import SpacingGrid from '../components/Cards'
 import { Input, InputAdornment, Button, Modal } from '@material-ui/core'
@@ -24,8 +24,10 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         addThisProduct: (product) => dispatch(addProductCart(product)),
+        filterCards: (folio) => dispatch(filterCards(folio)),
     }
 }
+
 const useStylesModal = makeStyles((theme) => ({
     paper: {
         position: 'absolute',
@@ -55,7 +57,7 @@ const useStyles = makeStyles({
     },
   });
 
-const Pedidos = () => {
+const Pedidos = (props) => {
     const classes = useStyles();
     const classesModal = useStylesModal();
     const [open, setOpen] = useState(false)
@@ -94,6 +96,9 @@ const Pedidos = () => {
 
     const showOrder = () => {
         console.log('showOrder folio: ', folio)
+        if(folio !== '') {
+            props.filterCards(folio)
+        }
     }
     
     const showAllOrders = () => {

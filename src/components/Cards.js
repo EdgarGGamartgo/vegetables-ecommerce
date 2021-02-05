@@ -24,6 +24,7 @@ const mapStateToProps = (state, ownProps) => {
   console.log('REDUX FROM CARDS COMPONENT: ')
   return {
       item: 0, //itemState
+      globalFolio: state.card.folio
   }
 }
 
@@ -109,10 +110,29 @@ const SpacingGrid = (props) => {
   const [componentNotes, setComponentNotes] = useState([])
   const [currentCard, setCurrentCard] = useState({})
   const [allProducts, setAllProducts] = useState([])
+  const [renderedCards, setRenderedCards] = useState(true)
+  const [selectedCard, setSelectedCard] = useState([])
 
   const buttonStyle = {
     alignSelf: 'center'
   }
+
+  useEffect(() => {
+    (async () => {
+      console.log('Folio from Cards.js : ', props.globalFolio, componentNotes)
+      const filteredFolio = componentNotes.filter(note => note.folio === props.globalFolio)
+      console.log('filteredFolio : ', filteredFolio)
+      if (filteredFolio.length === 0) {
+        setRenderedCards(true)
+      } else {
+        setSelectedCard(filteredFolio)
+        setRenderedCards(false)
+      }
+    })()
+    // return () => {
+    //   cleanup
+    // }
+  }, [props.globalFolio])
 
   const handleAdd = () => {
     console.log('currentCard.articulos: ') //, currentCard.articulos
@@ -312,7 +332,7 @@ const SpacingGrid = (props) => {
     return (
       <>
         {
-          notes.map(nota => {
+          renderedCards ? notes.map(nota => {
             if (nota.isVisible) {
               return (
                 <Grid key={nota.folio} item>
@@ -372,7 +392,66 @@ const SpacingGrid = (props) => {
               return null
             }
           })
-        }
+        : selectedCard.map(nota => {
+          if (nota.isVisible) {
+            return (
+              <Grid key={nota.folio} item>
+                <Paper className={classes.paper}>
+                  <div  key={nota.folio}>         
+                    <div className="header0">
+                      <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        Folio: {nota.folio}
+                      </Typography>
+                    </div>
+                    <div className="Card-header">
+                      <Typography variant="h5" component="h2">
+                        Cliente:  {nota.cliente}
+                      </Typography>
+                      <Typography className={classes.title} color="textSecondary" gutterBottom>
+                         Direccion: {nota.direccion}
+                      </Typography>
+                    </div>
+                    <div className="Card-conten" >
+                      <div className="tambuttom">
+                              <Button
+                                onClick={() => handleOpen(nota)}
+                                variant="contained"
+                                color="primary"
+                                className={classes.button}
+                                startIcon={<RemoveRedEyeIcon />}
+                                size="small"
+                                >Ver pedido
+                              </Button>
+                      </div>
+                      <div className="tambuttom">
+                      <Button   
+                      variant="contained"
+                      color="primary"
+                      className={classes.button}
+                      startIcon={<DeleteIcon />}
+                      size="small"
+                      disabled={!nota.isChecked}
+                      onClick={() => showNote(!nota.isVisible, nota.folio)}
+                      >Eliminar
+                      </Button>
+                      </div>
+                    </div>
+                    <div className="Card-pie">
+                      <FormControlLabel
+                        control={<Green/>}
+                        checked={nota.isChecked} 
+                        onChange={(e) => handleSwitch(!nota.isChecked, nota.folio)} 
+                      />
+                      {nota.isChecked ? <span> Pedido surtido </span> : <span>Pedido no surtido</span>}
+                    </div>
+                  </div>    
+                </Paper>
+              </Grid>
+            )
+          } else {
+            return null
+          }
+        })}
       </>
     )
   }
