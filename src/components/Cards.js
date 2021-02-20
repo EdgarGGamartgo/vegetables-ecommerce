@@ -97,7 +97,7 @@ const useStylesModal = makeStyles((theme) => ({
 
 
 
-const SpacingGrid = (props) => {
+const SpacingGrid = ({ globalFolio, downloadCardProducts, updateCardProducts, orders }) => {
 
 
 
@@ -119,8 +119,8 @@ const SpacingGrid = (props) => {
 
   useEffect(() => {
     (async () => {
-      console.log('Folio from Cards.js : ', props.globalFolio, componentNotes)
-      const filteredFolio = componentNotes.filter(note => note.folio === props.globalFolio)
+      console.log('Folio from Cards.js : ', globalFolio, componentNotes)
+      const filteredFolio = componentNotes.filter(note => note.folio === globalFolio)
       console.log('filteredFolio : ', filteredFolio)
       if (filteredFolio.length === 0) {
         setRenderedCards(true)
@@ -132,7 +132,7 @@ const SpacingGrid = (props) => {
     // return () => {
     //   cleanup
     // }
-  }, [props.globalFolio])
+  }, [globalFolio])
 
   const handleAdd = () => {
     console.log('currentCard.articulos: ') //, currentCard.articulos
@@ -170,7 +170,7 @@ const SpacingGrid = (props) => {
   }
 
   const downloadOrder = () => {
-    props.downloadCardProducts(1)
+    downloadCardProducts(1)
   }
   const [enableDownload, setEnableDownload] = useState(true)
 
@@ -190,7 +190,7 @@ const SpacingGrid = (props) => {
 
   const confirmChanges = () => {
     console.log('confirmChanges: ', currentCard)
-    props.updateCardProducts(1)
+    updateCardProducts(1)
     setEnableDownload(!enableDownload)
   }
 
@@ -238,7 +238,7 @@ const SpacingGrid = (props) => {
       }
     })
     try {
-      await axios.put('http://localhost:3001/update/sale', {
+      await axios.put(`http://localhost:3001/update/visible`, {
         folio,
         visible
       })
@@ -455,16 +455,55 @@ const SpacingGrid = (props) => {
       </>
     )
   }
+
+  const renderedDeletedNotes = (notes) => {
+    return (
+      <>
+        {
+          notes.map(nota => {
+              return (
+                <Grid key={nota.folio} item>
+                  <Paper className={classes.paper}>
+                    <div  key={nota.folio}>         
+                      <div className="header0">
+                        <Typography className={classes.title} color="textSecondary" gutterBottom>
+                          Folio: {nota.folio}
+                        </Typography>
+                      </div>
+                      <div className="Card-header">
+                        <Typography variant="h5" component="h2">
+                          Cliente:  {nota.usuario.nombre} {nota.usuario.apellido_materno} {nota.usuario.apellido_paterno}
+                        </Typography>
+                        <Typography className={classes.title} color="textSecondary" gutterBottom>
+                           Direccion: {nota.usuario.calle} {nota.usuario.colonia} {nota.usuario.codigo_postal}
+                        </Typography>
+                      </div>
+                      <div className="Card-conten" >
+                        <div className="tambuttom">
+                        </div>
+                      </div>
+                    </div>    
+                  </Paper>
+                </Grid>
+              )
+          })
+        }
+      </>
+    )
+  }
   
   return (
     <Grid container >
       <Grid container item xs={12} spacing={3}>
         <Grid container justify="center" spacing={6}>
           {
+            orders.length !== 0 ? renderedDeletedNotes(orders) : renderedNotes(componentNotes) 
+          }
+          {/* {
             componentNotes.length !== 0 
             ? renderedNotes(componentNotes)
             : null
-          }
+          } */}
         </Grid>
       </Grid>
       <Modal
