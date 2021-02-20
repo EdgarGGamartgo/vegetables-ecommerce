@@ -64,6 +64,8 @@ const Pedidos = (props) => {
     const [modalStyle] = useState(getModalStyle);
     const [folio, setFolio] = useState('')
     const [isSales, setIsSales] = useState(false)
+    const [isDeletedOrders, setIsDeletedOrders] = useState(false)
+    const [deletedOrders, setDeletedOrders] = useState([])
 
     useEffect(() => {
         console.log('folio: ', folio)
@@ -101,8 +103,17 @@ const Pedidos = (props) => {
         }
     }
     
-    const showAllOrders = () => {
-        console.log('showAllOrders: ', folio)
+    const showAllOrders = async () => {
+        try {
+            const deletedOrders = await axios.get('http://localhost:3001/sales/deleted')
+            console.log('showAllOrders: ', deletedOrders.data)
+            setDeletedOrders(deletedOrders.data)
+            setIsDeletedOrders(true)
+        } catch(e) {
+            console.log('showAllOrders failed: ', e)
+            setDeletedOrders([])
+            setIsDeletedOrders(false)
+        }
     }
 
     const showAllSales = () => {
@@ -177,7 +188,7 @@ const Pedidos = (props) => {
                             </div>
                             </div>
 
-                        : <SpacingGrid />
+                        : isDeletedOrders ? <SpacingGrid orders={deletedOrders} /> : <SpacingGrid orders={[]}/>
                         }
                     </div>
                 </div>
